@@ -1,0 +1,478 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // =====================================================
+    // AUTH HELPERS
+    // =====================================================
+
+    function isAdmin() {
+      return request.auth != null
+        && request.auth.uid == "2GsnovCgxlYVz46LYSM2iRicMQk1";
+    }
+
+    function isAnonymousPlayer() {
+      return request.auth != null
+        && request.auth.token.firebase.sign_in_provider == "anonymous";
+    }
+
+    function validUpdatedAt() {
+      return request.resource.data.updatedAt == request.time;
+    }
+
+    // =====================================================
+    // PORTFOLIO
+    // Public read
+    // Exact Admin UID write
+    // =====================================================
+
+    match /portfolio/{documentId} {
+
+      // -----------------------------------------------------
+      // PUBLIC READ
+      // -----------------------------------------------------
+
+      allow read:
+        if documentId == "about"
+        || documentId == "experience"
+        || documentId == "projects"
+        || documentId == "skills"
+        || documentId == "education"
+        || documentId == "resume"
+        || documentId == "contact";
+
+
+      // =====================================================
+      // ABOUT
+      // =====================================================
+
+      allow create, update:
+        if documentId == "about"
+        && isAdmin()
+        && validUpdatedAt()
+
+        && request.resource.data.keys().hasOnly([
+          "eyebrow",
+          "name",
+          "headline",
+          "intro",
+          "description",
+          "quote",
+          "tags",
+          "stats",
+          "focus",
+          "updatedAt"
+        ])
+
+        && request.resource.data.eyebrow is string
+        && request.resource.data.eyebrow.size() <= 100
+
+        && request.resource.data.name is string
+        && request.resource.data.name.size() >= 1
+        && request.resource.data.name.size() <= 120
+
+        && request.resource.data.headline is string
+        && request.resource.data.headline.size() >= 1
+        && request.resource.data.headline.size() <= 300
+
+        && request.resource.data.intro is string
+        && request.resource.data.intro.size() <= 1000
+
+        && request.resource.data.description is string
+        && request.resource.data.description.size() <= 5000
+
+        && request.resource.data.quote is string
+        && request.resource.data.quote.size() <= 1000
+
+        && request.resource.data.tags is list
+        && request.resource.data.tags.size() <= 12
+
+        && request.resource.data.stats is list
+        && request.resource.data.stats.size() <= 8
+
+        && request.resource.data.focus is list
+        && request.resource.data.focus.size() <= 8;
+
+
+      // =====================================================
+      // EXPERIENCE
+      // =====================================================
+
+      allow create, update:
+        if documentId == "experience"
+        && isAdmin()
+        && validUpdatedAt()
+
+        && request.resource.data.keys().hasOnly([
+          "eyebrow",
+          "heading",
+          "intro",
+          "items",
+          "updatedAt"
+        ])
+
+        && request.resource.data.eyebrow is string
+        && request.resource.data.eyebrow.size() <= 100
+
+        && request.resource.data.heading is string
+        && request.resource.data.heading.size() >= 1
+        && request.resource.data.heading.size() <= 300
+
+        && request.resource.data.intro is string
+        && request.resource.data.intro.size() <= 1500
+
+        && request.resource.data.items is list
+        && request.resource.data.items.size() <= 20;
+
+
+      // =====================================================
+      // PROJECTS
+      // =====================================================
+
+      allow create, update:
+        if documentId == "projects"
+        && isAdmin()
+        && validUpdatedAt()
+
+        && request.resource.data.keys().hasOnly([
+          "eyebrow",
+          "heading",
+          "intro",
+          "items",
+          "updatedAt"
+        ])
+
+        && request.resource.data.eyebrow is string
+        && request.resource.data.eyebrow.size() <= 100
+
+        && request.resource.data.heading is string
+        && request.resource.data.heading.size() >= 1
+        && request.resource.data.heading.size() <= 300
+
+        && request.resource.data.intro is string
+        && request.resource.data.intro.size() <= 1500
+
+        && request.resource.data.items is list
+        && request.resource.data.items.size() <= 24;
+
+
+      // =====================================================
+      // SKILLS
+      // =====================================================
+
+      allow create, update:
+        if documentId == "skills"
+        && isAdmin()
+        && validUpdatedAt()
+
+        && request.resource.data.keys().hasOnly([
+          "eyebrow",
+          "heading",
+          "intro",
+          "categories",
+          "updatedAt"
+        ])
+
+        && request.resource.data.eyebrow is string
+        && request.resource.data.eyebrow.size() <= 100
+
+        && request.resource.data.heading is string
+        && request.resource.data.heading.size() >= 1
+        && request.resource.data.heading.size() <= 300
+
+        && request.resource.data.intro is string
+        && request.resource.data.intro.size() <= 1500
+
+        && request.resource.data.categories is list
+        && request.resource.data.categories.size() <= 12;
+
+
+      // =====================================================
+      // EDUCATION
+      // =====================================================
+
+      allow create, update:
+        if documentId == "education"
+        && isAdmin()
+        && validUpdatedAt()
+
+        && request.resource.data.keys().hasOnly([
+          "eyebrow",
+          "heading",
+          "intro",
+          "items",
+          "updatedAt"
+        ])
+
+        && request.resource.data.eyebrow is string
+        && request.resource.data.eyebrow.size() <= 100
+
+        && request.resource.data.heading is string
+        && request.resource.data.heading.size() >= 1
+        && request.resource.data.heading.size() <= 300
+
+        && request.resource.data.intro is string
+        && request.resource.data.intro.size() <= 1500
+
+        && request.resource.data.items is list
+        && request.resource.data.items.size() <= 20;
+
+
+      // =====================================================
+      // RESUME
+      // =====================================================
+
+      allow create, update:
+        if documentId == "resume"
+        && isAdmin()
+        && validUpdatedAt()
+
+        && request.resource.data.keys().hasOnly([
+          "eyebrow",
+          "heading",
+          "intro",
+          "pdfUrl",
+          "pdfPath",
+          "pdfName",
+          "timeline",
+          "updatedAt"
+        ])
+
+        && request.resource.data.eyebrow is string
+        && request.resource.data.eyebrow.size() <= 100
+
+        && request.resource.data.heading is string
+        && request.resource.data.heading.size() >= 1
+        && request.resource.data.heading.size() <= 300
+
+        && request.resource.data.intro is string
+        && request.resource.data.intro.size() <= 1500
+
+        && request.resource.data.pdfUrl is string
+        && request.resource.data.pdfUrl.size() <= 3000
+
+        && request.resource.data.pdfPath is string
+        && request.resource.data.pdfPath.size() <= 1000
+
+        && request.resource.data.pdfName is string
+        && request.resource.data.pdfName.size() <= 300
+
+        && request.resource.data.timeline is list
+        && request.resource.data.timeline.size() <= 20;
+
+
+      // =====================================================
+      // CONTACT
+      // =====================================================
+
+      allow create, update:
+        if documentId == "contact"
+        && isAdmin()
+        && validUpdatedAt()
+
+        && request.resource.data.keys().hasOnly([
+          "eyebrow",
+          "heading",
+          "intro",
+          "availabilityHeading",
+          "availabilityText",
+          "links",
+          "updatedAt"
+        ])
+
+        && request.resource.data.eyebrow is string
+        && request.resource.data.eyebrow.size() <= 100
+
+        && request.resource.data.heading is string
+        && request.resource.data.heading.size() >= 1
+        && request.resource.data.heading.size() <= 300
+
+        && request.resource.data.intro is string
+        && request.resource.data.intro.size() <= 1500
+
+        && request.resource.data.availabilityHeading is string
+        && request.resource.data.availabilityHeading.size() <= 200
+
+        && request.resource.data.availabilityText is string
+        && request.resource.data.availabilityText.size() <= 1500
+
+        && request.resource.data.links is list
+        && request.resource.data.links.size() <= 12;
+
+
+      // -----------------------------------------------------
+      // DELETE
+      // -----------------------------------------------------
+
+      allow delete:
+        if isAdmin()
+        && (
+          documentId == "about"
+          || documentId == "experience"
+          || documentId == "projects"
+          || documentId == "skills"
+          || documentId == "education"
+          || documentId == "resume"
+          || documentId == "contact"
+        );
+    }
+
+
+    // =====================================================
+    // KEEP IT TOGETHER — PLAYERS
+    // =====================================================
+
+    match /players/{playerId} {
+
+      // Leaderboard is public
+      allow read: if true;
+
+
+      // =====================================================
+      // CREATE PLAYER
+      // =====================================================
+
+      allow create:
+        if isAnonymousPlayer()
+
+        && request.auth.uid == playerId
+
+        && request.resource.data.keys().hasOnly([
+          "name",
+          "bestTime",
+          "bestScore",
+          "level",
+          "createdAt",
+          "updatedAt"
+        ])
+
+        && request.resource.data.name is string
+        && request.resource.data.name.size() >= 2
+        && request.resource.data.name.size() <= 18
+        && request.resource.data.name.matches(
+          "^[A-Za-z0-9 _-]+$"
+        )
+
+        && request.resource.data.bestTime is number
+        && request.resource.data.bestTime >= 0
+        && request.resource.data.bestTime <= 86400
+
+        && request.resource.data.bestScore is int
+        && request.resource.data.bestScore >= 0
+        && request.resource.data.bestScore <= 10000000
+
+        && request.resource.data.level is int
+        && request.resource.data.level >= 1
+        && request.resource.data.level <= 10000
+
+        && request.resource.data.createdAt == request.time
+        && request.resource.data.updatedAt == request.time;
+
+
+      // =====================================================
+      // UPDATE PLAYER
+      // =====================================================
+
+      allow update:
+        if isAnonymousPlayer()
+
+        && request.auth.uid == playerId
+
+        // Only these fields may ever change
+        && request.resource.data
+          .diff(resource.data)
+          .affectedKeys()
+          .hasOnly([
+            "name",
+            "bestTime",
+            "bestScore",
+            "level",
+            "updatedAt"
+          ])
+
+        && request.resource.data.keys().hasOnly([
+          "name",
+          "bestTime",
+          "bestScore",
+          "level",
+          "createdAt",
+          "updatedAt"
+        ])
+
+        && request.resource.data.name is string
+        && request.resource.data.name.size() >= 2
+        && request.resource.data.name.size() <= 18
+        && request.resource.data.name.matches(
+          "^[A-Za-z0-9 _-]+$"
+        )
+
+        && request.resource.data.bestTime is number
+        && request.resource.data.bestTime >= 0
+        && request.resource.data.bestTime <= 86400
+
+        && request.resource.data.bestScore is int
+        && request.resource.data.bestScore >= 0
+        && request.resource.data.bestScore <= 10000000
+
+        && request.resource.data.level is int
+        && request.resource.data.level >= 1
+        && request.resource.data.level <= 10000
+
+        // Account creation date can never change
+        && request.resource.data.createdAt
+          == resource.data.createdAt
+
+        && request.resource.data.updatedAt
+          == request.time
+
+        // ---------------------------------------------------
+        // BEST SCORE CANNOT GO BACKWARDS
+        //
+        // This still allows a name-only update because the
+        // existing time, score and level can remain equal.
+        // ---------------------------------------------------
+
+        && (
+          request.resource.data.bestTime
+            > resource.data.bestTime
+
+          ||
+
+          (
+            request.resource.data.bestTime
+              == resource.data.bestTime
+
+            && request.resource.data.bestScore
+              > resource.data.bestScore
+          )
+
+          ||
+
+          (
+            request.resource.data.bestTime
+              == resource.data.bestTime
+
+            && request.resource.data.bestScore
+              == resource.data.bestScore
+
+            && request.resource.data.level
+              >= resource.data.level
+          )
+        );
+
+
+      // Player records cannot be deleted from the website
+      allow delete: if false;
+    }
+
+
+    // =====================================================
+    // DEFAULT DENY
+    // =====================================================
+
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
