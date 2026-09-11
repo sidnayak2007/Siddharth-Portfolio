@@ -4,7 +4,7 @@ import {
   useRef,
   useState,
 } from "react";
-
+import profileImage from "../../assets/profile.png";
 import "../../css/welcome.css";
 
 function Welcome({
@@ -385,7 +385,7 @@ function Welcome({
                 <div className="business-photo-frame">
                   {photoAvailable ? (
                     <img
-                      src={`${import.meta.env.BASE_URL}profile.png`}
+                      src={profileImage}
                       alt="Siddharth Nayak"
                       className="business-photo"
                       onError={() => {
