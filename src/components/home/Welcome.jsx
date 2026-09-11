@@ -385,7 +385,7 @@ function Welcome({
                 <div className="business-photo-frame">
                   {photoAvailable ? (
                     <img
-                      src="/profile.png"
+                      src={`${import.meta.env.BASE_URL}profile.png`}
                       alt="Siddharth Nayak"
                       className="business-photo"
                       onError={() => {
