@@ -1,757 +1,109 @@
+import profileImage from "../../assets/profile.png";
+import { aboutFallback } from "../../data/portfolioDefaults";
+import { usePublicPortfolioDocument } from "../../hooks/usePublicPortfolioDocument";
 import {
-  useEffect,
-  useState,
-} from "react";
+  PortfolioLink,
+  PortfolioMore,
+  PortfolioSection,
+  PortfolioTags,
+  safeHref,
+} from "./PortfolioSectionUI";
 
-import {
-  doc,
-  getDoc,
-} from "firebase/firestore";
+export default function About({ onBack }) {
+  const { data: about, loading, error, retry } =
+    usePublicPortfolioDocument("about", aboutFallback);
 
-import {
-  db,
-} from "../../firebase/firebase";
+  const links = Array.isArray(about.links) ? about.links : [];
+  const focus = Array.isArray(about.focus) ? about.focus : [];
+  const stats = Array.isArray(about.stats) ? about.stats : [];
 
-import "../../css/about.css";
-
-/* =========================================================
-   DEFAULT ABOUT DATA
-========================================================= */
-
-const DEFAULT_ABOUT = {
-  eyebrow:
-    "ABOUT / 01",
-
-  name:
-    "Siddharth Nayak",
-
-  headline:
-    "Business, technology and ideas that become real things.",
-
-  intro:
-    "I’m a BBA student who enjoys turning ideas into things people can actually use, explore and interact with.",
-
-  description:
-    "Most of what I build starts with curiosity. I like experimenting with technology, design and AI to turn rough ideas into working digital experiences, while bringing a business and product perspective to the process.",
-
-  tags: [
-    "Business",
-    "Product Thinking",
-    "Technology",
-    "Creative Building",
-  ],
-
-  stats: [
-    {
-      value: "BBA",
-      label:
-        "Current degree",
-    },
-
-    {
-      value: "AI",
-      label:
-        "Assisted workflow",
-    },
-
-    {
-      value: "∞",
-      label:
-        "Ideas in progress",
-    },
-  ],
-
-  focus: [
-    {
-      number: "01",
-
-      title:
-        "Business",
-
-      text:
-        "Understanding how ideas create value, how products are positioned and how people make decisions.",
-    },
-
-    {
-      number: "02",
-
-      title:
-        "Building",
-
-      text:
-        "Turning concepts into working websites, experiments and interactive digital experiences.",
-    },
-
-    {
-      number: "03",
-
-      title:
-        "Technology",
-
-      text:
-        "Using modern tools and AI to explore what is possible without being limited by a traditional technical background.",
-    },
-  ],
-
-  quote:
-    "I care less about whether an idea starts perfectly and more about whether I can turn it into something real.",
-};
-
-/* =========================================================
-   DATA HELPERS
-========================================================= */
-
-function safeText(
-  value,
-  fallback
-) {
-  if (
-    typeof value !==
-    "string"
-  ) {
-    return fallback;
-  }
-
-  const cleaned =
-    value.trim();
-
-  return cleaned ||
-    fallback;
-}
-
-function normalizeTags(
-  value
-) {
-  if (
-    !Array.isArray(value)
-  ) {
-    return DEFAULT_ABOUT.tags;
-  }
-
-  const tags =
-    value
-      .map((tag) =>
-        String(
-          tag ?? ""
-        ).trim()
-      )
-      .filter(Boolean)
-      .slice(0, 12);
-
-  return tags.length > 0
-    ? tags
-    : DEFAULT_ABOUT.tags;
-}
-
-function normalizeStats(
-  value
-) {
-  if (
-    !Array.isArray(value)
-  ) {
-    return DEFAULT_ABOUT.stats;
-  }
-
-  const stats =
-    value
-      .map(
-        (
-          item,
-          index
-        ) => ({
-          value:
-            safeText(
-              item?.value,
-              DEFAULT_ABOUT
-                .stats[
-                index
-              ]?.value ||
-                ""
-            ),
-
-          label:
-            safeText(
-              item?.label,
-              DEFAULT_ABOUT
-                .stats[
-                index
-              ]?.label ||
-                ""
-            ),
-        })
-      )
-      .filter(
-        (item) =>
-          item.value ||
-          item.label
-      )
-      .slice(0, 8);
-
-  return stats.length > 0
-    ? stats
-    : DEFAULT_ABOUT.stats;
-}
-
-function normalizeFocus(
-  value
-) {
-  if (
-    !Array.isArray(value)
-  ) {
-    return DEFAULT_ABOUT.focus;
-  }
-
-  const focus =
-    value
-      .map(
-        (
-          item,
-          index
-        ) => ({
-          number:
-            safeText(
-              item?.number,
-              String(
-                index + 1
-              ).padStart(
-                2,
-                "0"
-              )
-            ),
-
-          title:
-            safeText(
-              item?.title,
-              DEFAULT_ABOUT
-                .focus[
-                index
-              ]?.title ||
-                "Focus"
-            ),
-
-          text:
-            safeText(
-              item?.text,
-              DEFAULT_ABOUT
-                .focus[
-                index
-              ]?.text ||
-                ""
-            ),
-        })
-      )
-      .filter(
-        (item) =>
-          item.title ||
-          item.text
-      )
-      .slice(0, 8);
-
-  return focus.length > 0
-    ? focus
-    : DEFAULT_ABOUT.focus;
-}
-
-function normalizeAboutData(
-  data
-) {
-  if (
-    !data ||
-    typeof data !==
-      "object"
-  ) {
-    return DEFAULT_ABOUT;
-  }
-
-  return {
-    eyebrow:
-      safeText(
-        data.eyebrow,
-        DEFAULT_ABOUT.eyebrow
-      ),
-
-    name:
-      safeText(
-        data.name,
-        DEFAULT_ABOUT.name
-      ),
-
-    headline:
-      safeText(
-        data.headline,
-        DEFAULT_ABOUT.headline
-      ),
-
-    intro:
-      safeText(
-        data.intro,
-        DEFAULT_ABOUT.intro
-      ),
-
-    description:
-      safeText(
-        data.description,
-        DEFAULT_ABOUT.description
-      ),
-
-    quote:
-      safeText(
-        data.quote,
-        DEFAULT_ABOUT.quote
-      ),
-
-    tags:
-      normalizeTags(
-        data.tags
-      ),
-
-    stats:
-      normalizeStats(
-        data.stats
-      ),
-
-    focus:
-      normalizeFocus(
-        data.focus
-      ),
-  };
-}
-
-/* =========================================================
-   ABOUT
-========================================================= */
-
-function About({
-  onBack,
-}) {
-  const [
-    about,
-    setAbout,
-  ] = useState(
-    DEFAULT_ABOUT
+  const hasMore = Boolean(
+    about.description || about.quote || focus.length || stats.length
   );
-
-  const [
-    loading,
-    setLoading,
-  ] = useState(true);
-
-  /*
-  ========================================================
-  LOAD FIRESTORE CONTENT
-  ========================================================
-
-  Firestore content overrides the local fallback.
-
-  If Firestore is unavailable or access is denied,
-  visitors still receive the complete local version.
-  ========================================================
-  */
-
-  useEffect(() => {
-    let cancelled =
-      false;
-
-    const loadAbout =
-      async () => {
-        setLoading(
-          true
-        );
-
-        try {
-          const reference =
-            doc(
-              db,
-              "portfolio",
-              "about"
-            );
-
-          const snapshot =
-            await getDoc(
-              reference
-            );
-
-          if (cancelled) {
-            return;
-          }
-
-          if (
-            snapshot.exists()
-          ) {
-            setAbout(
-              normalizeAboutData(
-                snapshot.data()
-              )
-            );
-
-            return;
-          }
-
-          setAbout(
-            DEFAULT_ABOUT
-          );
-        } catch (error) {
-          console.error(
-            "Failed to load About data:",
-            error
-          );
-
-          if (
-            !cancelled
-          ) {
-            setAbout(
-              DEFAULT_ABOUT
-            );
-          }
-        } finally {
-          if (
-            !cancelled
-          ) {
-            setLoading(
-              false
-            );
-          }
-        }
-      };
-
-    void loadAbout();
-
-    return () => {
-      cancelled = true;
-    };
-  }, []);
-
-  const displayName =
-    about.name ||
-    DEFAULT_ABOUT.name;
-
-  const displayNameUpper =
-    displayName.toUpperCase();
 
   return (
-    <main
-      className="about-page"
-      aria-busy={
-        loading
-      }
+    <PortfolioSection
+      section="about"
+      number="01"
+      heading="About"
+      intro="The person behind the projects."
+      onBack={onBack}
+      loading={loading}
+      error={error}
+      onRetry={retry}
     >
-      {/*
-      =====================================================
-      BACKGROUND
-      =====================================================
-      */}
+      <article className="portfolio-card portfolio-about-card">
+        <div className="portfolio-profile">
+          <img
+            className="portfolio-profile-photo"
+            src={about.photoUrl || profileImage}
+            alt={about.name ? `Portrait of ${about.name}` : "Profile portrait"}
+          />
 
-      <div
-        className="about-background"
-        aria-hidden="true"
-      >
-        <div className="about-background-grid" />
-
-        <div className="about-background-orb about-background-orb-one" />
-
-        <div className="about-background-orb about-background-orb-two" />
-      </div>
-
-      {/*
-      =====================================================
-      HEADER
-      =====================================================
-      */}
-
-      <header className="about-header">
-        <button
-          type="button"
-          className="about-back"
-          onClick={() => {
-            onBack?.();
-          }}
-          aria-label="Back to portfolio home"
-        >
-          <svg
-            viewBox="0 0 24 24"
-            aria-hidden="true"
-          >
-            <path d="M19 12H5" />
-
-            <path d="m11 18-6-6 6-6" />
-          </svg>
-
-          <span>
-            Back
-          </span>
-        </button>
-
-        <div className="about-header-center">
-          <span>
-            PROFILE
-          </span>
-
-          <strong>
-            {displayName}
-          </strong>
-        </div>
-
-        <div
-          className="about-header-index"
-          aria-label="Section 01"
-        >
-          <span>
-            SECTION
-          </span>
-
-          <strong>
-            01
-          </strong>
-        </div>
-      </header>
-
-      {/*
-      =====================================================
-      HERO
-      =====================================================
-      */}
-
-      <section className="about-hero">
-        <div className="about-hero-copy">
-          <span className="about-eyebrow">
-            {about.eyebrow}
-          </span>
-
-          <h1>
-            {about.headline}
-          </h1>
-
-          <p className="about-intro">
-            {about.intro}
-          </p>
-
-          <p className="about-description">
-            {about.description}
-          </p>
-
-          <div
-            className="about-tags"
-            aria-label="Areas of interest"
-          >
-            {about.tags.map(
-              (
-                tag,
-                index
-              ) => (
-                <span
-                  key={`${tag}-${index}`}
-                >
-                  {tag}
-                </span>
-              )
+          <div className="portfolio-profile-info">
+            <h2>{about.name || aboutFallback.name}</h2>
+            {about.headline && (
+              <p><strong>{about.headline}</strong></p>
             )}
+            {about.location && <p>{about.location}</p>}
+            {about.intro && <p>{about.intro}</p>}
           </div>
         </div>
 
-        {/*
-        ===================================================
-        PROFILE CARD
-        ===================================================
-        */}
+        <PortfolioTags items={about.tags} label="Areas of interest" />
 
-        <aside
-          className="about-profile-card"
-          aria-label={`${displayName} profile card`}
-        >
-          <div className="about-profile-top">
-            <span>
-              PROFILE CARD
-            </span>
-
-            <span>
-              {loading
-                ? "SYNCING"
-                : "SN / 2026"}
-            </span>
-          </div>
-
-          <div
-            className="about-profile-visual"
-            aria-hidden="true"
-          >
-            <div className="about-profile-ring about-profile-ring-one" />
-
-            <div className="about-profile-ring about-profile-ring-two" />
-
-            <div className="about-profile-monogram">
-              <span>
-                SN
-              </span>
-            </div>
-
-            <div className="about-profile-line about-profile-line-one" />
-
-            <div className="about-profile-line about-profile-line-two" />
-          </div>
-
-          <div className="about-profile-bottom">
-            <div>
-              <span>
-                NAME
-              </span>
-
-              <strong>
-                {displayName}
-              </strong>
-            </div>
-
-            <div>
-              <span>
-                MODE
-              </span>
-
-              <strong>
-                Builder
-              </strong>
-            </div>
-          </div>
-        </aside>
-      </section>
-
-      {/*
-      =====================================================
-      STATS
-      =====================================================
-      */}
-
-      <section
-        className="about-stats"
-        aria-label="Profile highlights"
-      >
-        {about.stats.map(
-          (
-            item,
-            index
-          ) => (
-            <article
-              className="about-stat"
-              key={`${item.label}-${index}`}
-            >
-              <strong>
-                {item.value}
-              </strong>
-
-              <span>
-                {item.label}
-              </span>
-            </article>
-          )
-        )}
-      </section>
-
-      {/*
-      =====================================================
-      FOCUS
-      =====================================================
-      */}
-
-      <section className="about-focus">
-        <div className="about-section-heading">
-          <span>
-            WHAT DRIVES ME
-          </span>
-
-          <h2>
-            Three things that shape
-            <br />
-
-            how I approach work.
-          </h2>
-        </div>
-
-        <div className="about-focus-grid">
-          {about.focus.map(
-            (
-              item,
-              index
-            ) => (
-              <article
-                className="about-focus-card"
-                key={`${item.number}-${item.title}-${index}`}
-              >
-                <div className="about-focus-number">
-                  {item.number}
-                </div>
-
-                <div className="about-focus-content">
-                  <h3>
-                    {item.title}
-                  </h3>
-
-                  <p>
-                    {item.text}
-                  </p>
-                </div>
-
-                <div
-                  className="about-focus-arrow"
-                  aria-hidden="true"
+        {links.length > 0 && (
+          <div className="portfolio-links" aria-label="Professional links">
+            {links
+              .filter(
+                (link) =>
+                  link &&
+                  link.visible !== false &&
+                  safeHref(link.url)
+              )
+              .map((link, index) => (
+                <PortfolioLink
+                  href={link.url}
+                  key={link.id || index}
                 >
-                  ↗
-                </div>
-              </article>
-            )
-          )}
-        </div>
-      </section>
+                  {link.label || "Professional link"}
+                </PortfolioLink>
+              ))}
+          </div>
+        )}
 
-      {/*
-      =====================================================
-      QUOTE
-      =====================================================
-      */}
+        {hasMore && (
+          <PortfolioMore label="View more about me">
+            {about.description && <p>{about.description}</p>}
+            {about.quote && <p>“{about.quote}”</p>}
 
-      <section className="about-quote">
-        <span
-          className="about-quote-mark"
-          aria-hidden="true"
-        >
-          “
-        </span>
+            {focus.length > 0 && (
+              <ul>
+                {focus
+                  .filter((item) => item?.title || item?.text)
+                  .map((item, index) => (
+                    <li key={`${item.title || "focus"}-${index}`}>
+                      <strong>{item.title}</strong>
+                      {item.title && item.text ? " — " : ""}
+                      {item.text}
+                    </li>
+                  ))}
+              </ul>
+            )}
 
-        <blockquote>
-          {about.quote}
-        </blockquote>
-
-        <div className="about-quote-signature">
-          <span>
-            {displayNameUpper}
-          </span>
-
-          <i />
-
-          <span>
-            ABOUT
-          </span>
-        </div>
-      </section>
-
-      {/*
-      =====================================================
-      FOOTER
-      =====================================================
-      */}
-
-      <footer className="about-footer">
-        <span>
-          {displayNameUpper}
-        </span>
-
-        <span>
-          ABOUT / PORTFOLIO
-        </span>
-
-        <span>
-          2026
-        </span>
-      </footer>
-    </main>
+            {stats.length > 0 && (
+              <PortfolioTags
+                label="Profile highlights"
+                items={stats
+                  .filter((item) => item?.value)
+                  .map((item) =>
+                    [item.value, item.label].filter(Boolean).join(" · ")
+                  )}
+              />
+            )}
+          </PortfolioMore>
+        )}
+      </article>
+    </PortfolioSection>
   );
 }
-
-export default About;

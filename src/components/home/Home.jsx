@@ -1,17 +1,6 @@
-import {
-  useMemo,
-  useState,
-} from "react";
-
+import { useState } from "react";
 import HomeBackground from "./HomeBackground";
-
 import "../../css/home.css";
-
-/*
-=========================================================
-HOME SECTIONS
-=========================================================
-*/
 
 const menuItems = [
   {
@@ -92,7 +81,7 @@ const menuItems = [
 
   {
     id: "game",
-    label: "Play",
+    label: "Game",
     number: "07",
     title: "Keep It Together",
     eyebrow: "Playground",
@@ -102,516 +91,48 @@ const menuItems = [
     secondary: "#ffc1d2",
     soft: "#fff1f6",
   },
+  {
+    id: "contact", label: "Contact", number: "08", title: "Contact",
+    primary: "#4c8bca", secondary: "#9bc9ef", soft: "#edf7ff",
+  },
 ];
 
-/*
-=========================================================
-HOME
-=========================================================
-*/
+function Home({ onOpenSection }) {
+  const [activeId, setActiveId] = useState("projects");
+  const activeItem = menuItems.find((item) => item.id === activeId) || menuItems[0];
 
-function Home({
-  onOpenSection,
-}) {
-  const [
-    activeId,
-    setActiveId,
-  ] = useState("projects");
-
-  const [
-    transitionKey,
-    setTransitionKey,
-  ] = useState(0);
-
-  /*
-  ========================================================
-  ACTIVE ITEM
-  ========================================================
-  */
-
-  const activeItem =
-    useMemo(
-      () =>
-        menuItems.find(
-          (item) =>
-            item.id ===
-            activeId
-        ) ||
-        menuItems.find(
-          (item) =>
-            item.id ===
-            "projects"
-        ) ||
-        menuItems[0],
-      [activeId]
-    );
-
-  /*
-  ========================================================
-  SELECT SECTION
-  ========================================================
-  */
-
-  const changeSection =
-    (id) => {
-      const exists =
-        menuItems.some(
-          (item) =>
-            item.id === id
-        );
-
-      if (
-        !exists ||
-        id === activeId
-      ) {
-        return;
-      }
-
-      setActiveId(
-        id
-      );
-
-      setTransitionKey(
-        (value) =>
-          value + 1
-      );
-    };
-
-  /*
-  ========================================================
-  OPEN SECTION
-  ========================================================
-
-  App.jsx owns portfolio navigation.
-
-  Home only sends the selected section object upward.
-  ========================================================
-  */
-
-  const openSection =
-    (item) => {
-      if (
-        !item ||
-        typeof onOpenSection !==
-          "function"
-      ) {
-        return;
-      }
-
-      onOpenSection(
-        item
-      );
-    };
-
-  const handleOpen =
-    () => {
-      openSection(
-        activeItem
-      );
-    };
-
-  const openSectionById =
-    (id) => {
-      const item =
-        menuItems.find(
-          (entry) =>
-            entry.id === id
-        );
-
-      if (
-        item
-      ) {
-        openSection(
-          item
-        );
-
-        return;
-      }
-
-      /*
-      Contact is intentionally not part of
-      the large PS5 card carousel.
-      */
-      if (
-        id === "contact" &&
-        typeof onOpenSection ===
-          "function"
-      ) {
-        onOpenSection({
-          id: "contact",
-        });
-      }
-    };
-
-  /*
-  ========================================================
-  ADMIN
-  ========================================================
-  */
-
-  const handleAdminOpen =
-    () => {
-      window.location.href =
-        "/admin";
-    };
-
-  /*
-  ========================================================
-  KEYBOARD CARD NAVIGATION
-  ========================================================
-  */
-
-  const handleCardKeyDown =
-    (
-      event,
-      index
-    ) => {
-      if (
-        event.key !==
-          "ArrowRight" &&
-        event.key !==
-          "ArrowLeft"
-      ) {
-        return;
-      }
-
-      event.preventDefault();
-
-      const direction =
-        event.key ===
-        "ArrowRight"
-          ? 1
-          : -1;
-
-      const nextIndex =
-        (
-          index +
-          direction +
-          menuItems.length
-        ) %
-        menuItems.length;
-
-      changeSection(
-        menuItems[
-          nextIndex
-        ].id
-      );
-    };
+  const handleKeyDown = (event, index) => {
+    if (!["ArrowRight", "ArrowLeft", "ArrowUp", "ArrowDown"].includes(event.key)) return;
+    event.preventDefault();
+    const step = event.key === "ArrowRight" || event.key === "ArrowDown" ? 1 : -1;
+    const next = menuItems[(index + step + menuItems.length) % menuItems.length];
+    setActiveId(next.id);
+    document.getElementById(`portfolio-card-${next.id}`)?.focus();
+  };
 
   return (
-    <main
-      className="ps-home"
-      style={{
-        "--active-primary":
-          activeItem.primary,
-
-        "--active-secondary":
-          activeItem.secondary,
-
-        "--active-soft":
-          activeItem.soft,
-      }}
-    >
-      <HomeBackground
-        primary={
-          activeItem.primary
-        }
-        secondary={
-          activeItem.secondary
-        }
-        soft={
-          activeItem.soft
-        }
-      />
-
-      <div
-        key={
-          transitionKey
-        }
-        className="section-transition-flash"
-        aria-hidden="true"
-      />
-
-      {/*
-      =====================================================
-      TOP BAR
-      =====================================================
-      */}
-
-      <header className="ps-topbar">
-        <button
-          type="button"
-          className="ps-profile"
-          onClick={() => {
-            openSectionById(
-              "about"
-            );
-          }}
-          aria-label="Open About section"
-        >
-          <div
-            className="ps-profile-logo"
-            aria-hidden="true"
-          >
-            <span>
-              SN
-            </span>
-          </div>
-
-          <div className="ps-profile-copy">
-            <strong>
-              Siddharth Nayak
-            </strong>
-
-            <span>
-              Personal Portfolio
-            </span>
-          </div>
-        </button>
-
-        <nav
-          className="ps-main-nav"
-          aria-label="Portfolio navigation"
-        >
-          <button
-            type="button"
-            className={
-              activeId ===
-              "projects"
-                ? "active"
-                : ""
-            }
-            onClick={() =>
-              changeSection(
-                "projects"
-              )
-            }
-            aria-current={
-              activeId ===
-              "projects"
-                ? "page"
-                : undefined
-            }
-          >
-            Home
-          </button>
-
-          <button
-            type="button"
-            className={
-              activeId ===
-              "projects"
-                ? "active"
-                : ""
-            }
-            onClick={() =>
-              changeSection(
-                "projects"
-              )
-            }
-          >
-            Projects
-          </button>
-
-          <button
-            type="button"
-            className={
-              activeId ===
-              "experience"
-                ? "active"
-                : ""
-            }
-            onClick={() =>
-              changeSection(
-                "experience"
-              )
-            }
-          >
-            Experience
-          </button>
-
-          <button
-            type="button"
-            className={
-              activeId ===
-              "about"
-                ? "active"
-                : ""
-            }
-            onClick={() =>
-              changeSection(
-                "about"
-              )
-            }
-          >
-            About
-          </button>
-        </nav>
-
-        <div className="ps-top-actions">
-          <button
-            type="button"
-            className="ps-circle-button"
-            aria-label="Open resume"
-            title="Resume"
-            onClick={() => {
-              openSectionById(
-                "resume"
-              );
-            }}
-          >
-            <svg
-              viewBox="0 0 24 24"
-              aria-hidden="true"
-            >
-              <rect
-                x="6"
-                y="3"
-                width="12"
-                height="18"
-                rx="2"
-              />
-
-              <path d="M9 8h6" />
-              <path d="M9 12h6" />
-              <path d="M9 16h4" />
-            </svg>
-          </button>
-
-          <button
-            type="button"
-            className="ps-circle-button ps-admin-button"
-            aria-label="Open admin"
-            title="Admin"
-            onClick={
-              handleAdminOpen
-            }
-          >
-            <svg
-              viewBox="0 0 24 24"
-              aria-hidden="true"
-            >
-              <circle
-                cx="12"
-                cy="12"
-                r="3"
-              />
-
-              <path d="M19.4 15a1.7 1.7 0 0 0 .34 1.88l.06.06-2.83 2.83-.06-.06a1.7 1.7 0 0 0-1.88-.34 1.7 1.7 0 0 0-1.03 1.56V21h-4v-.08A1.7 1.7 0 0 0 9 19.37a1.7 1.7 0 0 0-1.88.34l-.06.06-2.83-2.83.06-.06A1.7 1.7 0 0 0 4.63 15a1.7 1.7 0 0 0-1.55-1H3v-4h.08A1.7 1.7 0 0 0 4.63 9a1.7 1.7 0 0 0-.34-1.88l-.06-.06 2.83-2.83.06.06A1.7 1.7 0 0 0 9 4.63a1.7 1.7 0 0 0 1-1.55V3h4v.08a1.7 1.7 0 0 0 1.03 1.55 1.7 1.7 0 0 0 1.88-.34l.06-.06 2.83 2.83-.06.06A1.7 1.7 0 0 0 19.4 9c.23.61.82 1.01 1.47 1H21v4h-.13c-.65-.01-1.24.39-1.47 1Z" />
-            </svg>
-          </button>
-
-          <button
-            type="button"
-            className="ps-contact-button"
-            onClick={() => {
-              openSectionById(
-                "contact"
-              );
-            }}
-          >
-            Contact
-          </button>
-        </div>
+    <main className="ps-home" style={{ "--active-primary": activeItem.primary, "--active-secondary": activeItem.secondary, "--active-soft": activeItem.soft }}>
+      <HomeBackground primary={activeItem.primary} secondary={activeItem.secondary} soft={activeItem.soft} />
+      <header className="ps-home-header">
+        <span className="ps-home-welcome">Welcome to Portfolio</span>
+        <button type="button" className="ps-home-admin" onClick={() => { window.location.href = "/admin"; }} aria-label="Open admin">Admin</button>
       </header>
-
-      {/*
-      =====================================================
-      DASHBOARD
-      =====================================================
-      */}
-
-      <section className="ps-dashboard">
-        <div className="ps-intro">
-          <div className="ps-intro-top">
-            <span className="ps-overline">
-              Welcome to my portfolio
-            </span>
-
-            <span className="ps-online">
-              <i />
-
-              Available
-            </span>
+      <section className="ps-home-content" aria-label="Siddharth Nayak portfolio">
+        <div className="ps-wheel" aria-label="Portfolio sections">
+          <div className="ps-wheel-ring" aria-hidden="true" />
+          <div className="ps-wheel-center" aria-live="polite">
+            <span className="ps-center-mark">SN</span>
+            <strong>Siddharth Nayak</strong>
+            <span className="ps-center-selected">{activeItem.label}</span>
           </div>
-
-          <h1>
-            Siddharth Nayak
-          </h1>
-
-          <p>
-            BBA Student
-
-            <span>
-              •
-            </span>
-
-            Builder
-
-            <span>
-              •
-            </span>
-
-            Product Thinker
-          </p>
-        </div>
-
-        {/*
-        ===================================================
-        SECTION CARDS
-        ===================================================
-        */}
-
-        <div
-          className="ps-card-row"
-          role="list"
-          aria-label="Portfolio sections"
-        >
-          {menuItems.map(
-            (
-              item,
-              index
-            ) => {
-              const isActive =
-                item.id ===
-                activeId;
-
-              return (
-                <button
-                  key={
-                    item.id
-                  }
-                  type="button"
-                  role="listitem"
-                  className={`ps-menu-card ${
-                    isActive
-                      ? "ps-menu-card-active"
-                      : ""
-                  }`}
-                  onClick={() =>
-                    changeSection(
-                      item.id
-                    )
-                  }
-                  onFocus={() =>
-                    changeSection(
-                      item.id
-                    )
-                  }
-                  onKeyDown={(
-                    event
-                  ) =>
-                    handleCardKeyDown(
-                      event,
-                      index
-                    )
-                  }
-                  aria-label={`Select ${item.label}`}
-                  aria-pressed={
-                    isActive
-                  }
-                >
-                  <div className="ps-card-art">
+          {menuItems.map((item, index) => (
+            <button id={`portfolio-card-${item.id}`} key={item.id} type="button"
+              className={`ps-menu-card ${activeId === item.id ? "ps-menu-card-active" : ""}`}
+              style={{ "--angle": `${index * 45 - 90}deg`, "--counter-angle": `${90 - index * 45}deg`, "--card-primary": item.primary, "--card-secondary": item.secondary }}
+              onClick={() => setActiveId(item.id)}
+              onKeyDown={(event) => handleKeyDown(event, index)}
+              aria-label={`Select ${item.label}`} aria-pressed={activeId === item.id}>
+<div className="ps-card-art">
                     <div
                       className="ps-card-theme"
                       style={{
@@ -762,239 +283,26 @@ EDUCATION
                       </div>
                     )}
 
+                    {item.id === "contact" && (
+                      <svg className="symbol symbol-contact" viewBox="0 0 80 80" fill="none" aria-hidden="true">
+                        <rect x="9" y="19" width="62" height="43" rx="10" fill="#dceeff" stroke="#5796cf" strokeWidth="3" />
+                        <path d="m12 23 28 22 28-22" stroke="#5796cf" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
+                        <path d="m12 59 18-17m38 17L50 42" stroke="#9cc9ed" strokeWidth="2" />
+                      </svg>
+                    )}
                     <div
                       className="ps-card-reflection"
                       aria-hidden="true"
                     />
                   </div>
-
-                  <div className="ps-card-text">
-                    <span>
-                      {
-                        item.label
-                      }
-                    </span>
-
-                    {isActive && (
-                      <i
-                        aria-hidden="true"
-                      />
-                    )}
-                  </div>
-                </button>
-              );
-            }
-          )}
-        </div>
-
-        {/*
-        ===================================================
-        ACTIVE SECTION INFORMATION
-        ===================================================
-        */}
-
-        <div className="ps-feature">
-          <div
-            key={
-              activeId
-            }
-            className="ps-feature-copy"
-          >
-            <div className="ps-feature-eyebrow">
-              <span>
-                {
-                  activeItem.number
-                }
-              </span>
-
-              <i />
-
-              <span>
-                {
-                  activeItem.eyebrow
-                }
-              </span>
-            </div>
-
-            <h2>
-              {
-                activeItem.title
-              }
-            </h2>
-
-            <p>
-              {
-                activeItem.description
-              }
-            </p>
-
-            <button
-              type="button"
-              className="ps-open-button"
-              onClick={
-                handleOpen
-              }
-            >
-              <span>
-                {activeId ===
-                "game"
-                  ? "Play Game"
-                  : "Explore"}
-              </span>
-
-              <svg
-                viewBox="0 0 24 24"
-                aria-hidden="true"
-              >
-                <path d="M5 12h14" />
-
-                <path d="m14 7 5 5-5 5" />
-              </svg>
+              <span className="ps-card-text">{item.label}</span>
             </button>
-          </div>
-
-          {/*
-          =================================================
-          FEATURE VISUAL
-          =================================================
-          */}
-
-          <div
-            key={`visual-${activeId}`}
-            className="ps-feature-visual"
-            aria-hidden="true"
-          >
-            <div className="feature-orbit orbit-one" />
-
-            <div className="feature-orbit orbit-two" />
-
-            <div className="feature-floating-card floating-card-back" />
-
-            <div className="feature-main-card">
-              <div className="feature-card-glow" />
-
-              <div className="feature-card-top">
-                <span>
-                  {
-                    activeItem.eyebrow
-                  }
-                </span>
-
-                <span>
-                  {
-                    activeItem.number
-                  }
-                </span>
-              </div>
-
-              <div className="feature-card-content">
-                <span className="feature-mini">
-                  {activeId ===
-                  "game"
-                    ? "Playground"
-                    : "Portfolio"}
-                </span>
-
-                <strong>
-                  {
-                    activeItem.label
-                  }
-                </strong>
-
-                <div className="feature-progress">
-                  <span />
-                </div>
-              </div>
-
-              <div className="feature-corner">
-                <svg viewBox="0 0 24 24">
-                  <path d="M5 19 19 5" />
-
-                  <path d="M10 5h9v9" />
-                </svg>
-              </div>
-            </div>
-
-            <div className="feature-floating-card floating-card-front" />
-          </div>
+          ))}
         </div>
-
-        {/*
-        ===================================================
-        FOOTER
-        ===================================================
-        */}
-
-        <footer className="ps-home-footer">
-          <div className="ps-controls">
-            <span>
-              <i className="control-circle" />
-
-              Select section
-            </span>
-
-            <span>
-              <i className="control-cross">
-                ×
-              </i>
-
-              {activeId ===
-              "game"
-                ? "Play"
-                : "Open"}
-            </span>
-          </div>
-
-          <div
-            className="ps-pagination"
-            aria-label="Section selector"
-          >
-            {menuItems.map(
-              (item) => (
-                <button
-                  key={
-                    item.id
-                  }
-                  type="button"
-                  aria-label={`Select ${item.label}`}
-                  aria-pressed={
-                    item.id ===
-                    activeId
-                  }
-                  className={
-                    item.id ===
-                    activeId
-                      ? "active"
-                      : ""
-                  }
-                  onClick={() =>
-                    changeSection(
-                      item.id
-                    )
-                  }
-                />
-              )
-            )}
-          </div>
-
-          <button
-            type="button"
-            className="ps-scroll"
-            onClick={() => {
-              openSectionById(
-                "projects"
-              );
-            }}
-          >
-            Explore portfolio
-
-            <span
-              aria-hidden="true"
-            >
-              ↓
-            </span>
-          </button>
-        </footer>
+        <button className="ps-open-button" type="button" onClick={() => onOpenSection?.(activeItem)}>
+          Explore {activeItem.label}
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14m-5-5 5 5-5 5" /></svg>
+        </button>
       </section>
     </main>
   );
