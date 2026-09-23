@@ -1,5 +1,6 @@
 import { projectsFallback } from "../../data/portfolioDefaults";
 import { usePublicPortfolioDocument } from "../../hooks/usePublicPortfolioDocument";
+import { safeHref } from "../../utils/url";
 import {
   PortfolioCard,
   PortfolioEmpty,
@@ -7,7 +8,6 @@ import {
   PortfolioMore,
   PortfolioSection,
   PortfolioTags,
-  safeHref,
 } from "./PortfolioSectionUI";
 
 function shortDescription(value) {

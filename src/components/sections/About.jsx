@@ -1,12 +1,12 @@
 import profileImage from "../../assets/profile.png";
 import { aboutFallback } from "../../data/portfolioDefaults";
 import { usePublicPortfolioDocument } from "../../hooks/usePublicPortfolioDocument";
+import { safeHref } from "../../utils/url";
 import {
   PortfolioLink,
   PortfolioMore,
   PortfolioSection,
   PortfolioTags,
-  safeHref,
 } from "./PortfolioSectionUI";
 
 export default function About({ onBack }) {

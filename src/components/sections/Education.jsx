@@ -1,12 +1,12 @@
 import { educationFallback } from "../../data/portfolioDefaults";
 import { usePublicPortfolioDocument } from "../../hooks/usePublicPortfolioDocument";
+import { safeHref } from "../../utils/url";
 import {
   PortfolioCard,
   PortfolioEmpty,
   PortfolioLink,
   PortfolioMore,
   PortfolioSection,
-  safeHref,
 } from "./PortfolioSectionUI";
 
 function shortText(value, limit = 175) {

@@ -1,12 +1,6 @@
 import { useState } from "react";
+import { safeHref } from "../../utils/url";
 import "../../css/portfolio-sections.css";
-
-export function safeHref(value) {
-  if (typeof value !== "string") return "";
-
-  const url = value.trim();
-  return /^(https?:\/\/|mailto:|tel:)/i.test(url) ? url : "";
-}
 
 export function PortfolioLink({
   href,
@@ -36,6 +30,7 @@ export function PortfolioLink({
 export function PortfolioSection({
   section,
   number,
+  eyebrow,
   heading,
   intro,
   onBack,
@@ -67,7 +62,7 @@ export function PortfolioSection({
         </header>
 
         <div className="portfolio-section-heading">
-          <span className="portfolio-eyebrow">Portfolio / {number}</span>
+          <span className="portfolio-eyebrow">{eyebrow || `Portfolio / ${number}`}</span>
           <h1>{heading || section}</h1>
           {intro && <p>{intro}</p>}
         </div>

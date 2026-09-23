@@ -159,6 +159,37 @@
   padding: clamp(18px, 3vw, 28px);
 }
 
+.portfolio-resume-download,
+.portfolio-availability {
+  padding: clamp(20px, 3vw, 28px);
+}
+
+.portfolio-resume-download {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px 24px;
+}
+
+.portfolio-resume-download h2,
+.portfolio-availability h2 {
+  margin: 0 0 5px;
+  font-size: 18px;
+}
+
+.portfolio-resume-download p,
+.portfolio-availability p {
+  margin: 0;
+  color: #627891;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.portfolio-resume-download .portfolio-link {
+  flex: 0 0 auto;
+}
+
 .portfolio-card-header {
   min-width: 0;
   display: flex;

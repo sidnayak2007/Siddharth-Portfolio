@@ -41,7 +41,7 @@ export default function AdminContact() {
   };
 
   return (
-    <EditorPage sectionId="contact" number="07" title="Contact" description="Manage professional links and your current availability message." editor={editor} onSave={save}>
+    <EditorPage sectionId="contact" number="08" title="Contact" description="Manage professional links and your current availability message." editor={editor} onSave={save}>
       <EditorSection number="01" title="Page information">
         <div className="admin-form-grid">
           <Field label="Eyebrow" value={contact.eyebrow} onChange={(value) => update("eyebrow", value)} />

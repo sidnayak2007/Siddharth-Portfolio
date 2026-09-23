@@ -366,7 +366,7 @@ export const resumeFallback = {
 
 export const contactFallback = {
   eyebrow:
-    "CONTACT / 07",
+    "CONTACT / 08",
 
   heading:
     "Let’s connect.",
