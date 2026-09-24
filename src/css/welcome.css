@@ -519,6 +519,10 @@
 .welcome-copy h1 { animation-delay: .16s; }
 .welcome-description { animation-delay: .25s; }
 .welcome-enter { animation-delay: .34s; }
+.welcome-page-intro .welcome-eyebrow,
+.welcome-page-intro .welcome-copy h1,
+.welcome-page-intro .welcome-description,
+.welcome-page-intro .welcome-enter { animation-play-state: paused; }
 .welcome-enter:active:not(:disabled) { transform: translateY(0) scale(.985); }
 @media (hover: none), (pointer: coarse) {
   .welcome-ambient, .welcome-portrait-stage::before { animation: none; }
@@ -526,4 +530,5 @@
 }
 @media (prefers-reduced-motion: reduce) {
   .welcome-eyebrow, .welcome-copy h1, .welcome-description, .welcome-enter { animation: none; }
+  .welcome-enter:active:not(:disabled) { transform: none; }
 }

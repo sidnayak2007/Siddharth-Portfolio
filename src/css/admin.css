@@ -4409,7 +4409,7 @@
   .admin-menu-button { display: inline-flex; }
   .admin-sidebar-backdrop { display: block; position: fixed; inset: 68px 0 0; z-index: 48; width: 100%; background: rgba(23, 43, 73, .32); }
   .admin-sidebar { display: block; position: fixed; top: 68px; bottom: 0; left: 0; z-index: 49; width: min(82vw, 320px); padding: 18px; transform: translateX(-110%); transition: transform 180ms ease; background: #f9fbff; box-shadow: 15px 0 35px rgba(35, 63, 99, .15); }
-  .admin-sidebar.admin-sidebar-open { transform: translateX(0); }
+.admin-sidebar.admin-sidebar-open { transform: translateX(0); }
   .admin-sidebar-heading,
   .admin-sidebar-footer { display: block; }
   .admin-sidebar-item { justify-content: flex-start; padding: 0 12px; }
@@ -4433,3 +4433,8 @@
   .admin-sticky-actions button { flex: 1; }
   .admin-preview-toolbar { padding: 10px; }
 }
+
+.admin-upload-progress { position: relative; min-height: 24px; margin-top: 10px; padding-top: 8px; border-top: 4px solid #e6edf8; }
+.admin-upload-progress > span { position: absolute; top: -4px; left: 0; height: 4px; border-radius: 4px; background: #5c8acc; transition: width .15s ease; }
+.admin-upload-progress small { color: #526b88; font-size: 11px; }
+@media (prefers-reduced-motion: reduce) { .admin-upload-progress > span { transition: none; } }

@@ -3403,6 +3403,7 @@ function drawPreview(
 
 export default function Game({
   onBack,
+  onNavigate,
 }) {
   const canvasRef =
     useRef(null);
@@ -5071,6 +5072,10 @@ const [
                 <p className="ob-start-hint">
                   The longer you survive, the faster and more chaotic the office becomes.
                 </p>
+                {onNavigate && <nav className="ob-portfolio-adjacent" aria-label="Other portfolio sections">
+                  <button type="button" onClick={() => onNavigate("resume")}>← Resume</button>
+                  <button type="button" onClick={() => onNavigate("contact")}>Contact →</button>
+                </nav>}
               </div>
             </div>
           )}

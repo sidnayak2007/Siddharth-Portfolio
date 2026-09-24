@@ -72,13 +72,15 @@ export default function Projects({ onBack, previewData }) {
 
         const hasMore = Boolean(
           item.details ||
+          item.contribution ||
+          item.aiProcess ||
+          item.challenges ||
           (
             typeof item.description === "string" &&
             item.description.length > 190
           ) ||
           contributors.length ||
           media.length ||
-          item.imageUrl ||
           technologies.length > 6 ||
           skills.length
         );
@@ -101,6 +103,16 @@ export default function Projects({ onBack, previewData }) {
               <p>{shortDescription(item.description)}</p>
             )}
 
+            {item.imageUrl && (
+              <PortfolioImage
+                className="portfolio-project-cover"
+                imageClassName="portfolio-project-cover-image"
+                src={item.imageUrl}
+                alt={`${item.title || "Project"} cover`}
+                caption="See full picture"
+              />
+            )}
+
             <PortfolioTags
               items={technologies.slice(0, 6)}
               label="Technologies and skills"
@@ -115,27 +127,15 @@ export default function Projects({ onBack, previewData }) {
 
             {hasMore && (
               <PortfolioMore label="View project details">
-                {item.imageUrl && (
-                  <PortfolioImage
-                    className="portfolio-detail-picture"
-                    imageClassName="portfolio-detail-image"
-                    src={item.imageUrl}
-                    alt={`${item.title || "Project"} preview`}
-                  />
-                )}
-
-                {item.details && <p>{item.details}</p>}
+                {item.details && <div className="portfolio-case-study-part"><h3>Overview</h3><p>{item.details}</p></div>}
 
                 {!item.details && item.description?.length > 190 && (
-                  <p>{item.description}</p>
+                  <div className="portfolio-case-study-part"><h3>Overview</h3><p>{item.description}</p></div>
                 )}
-
-                {technologies.length > 6 && (
-                  <PortfolioTags
-                    items={technologies.slice(6)}
-                    label="Additional technologies"
-                  />
-                )}
+                {item.contribution && <div className="portfolio-case-study-part"><h3>My contribution</h3><p>{item.contribution}</p></div>}
+                {item.aiProcess && <div className="portfolio-case-study-part"><h3>AI-assisted process</h3><p>{item.aiProcess}</p></div>}
+                {item.challenges && <div className="portfolio-case-study-part"><h3>Challenges solved</h3><p>{item.challenges}</p></div>}
+                {technologies.length > 0 && <div className="portfolio-case-study-part"><h3>Tools used</h3><PortfolioTags items={technologies} label="Tools used" /></div>}
 
                 {skills.length > 0 && (
                   <div>

@@ -1,308 +1,90 @@
-import {
-  useEffect,
-  useState,
-} from "react";
-
-import {
-  onAuthStateChanged,
-} from "firebase/auth";
-
-import {
-  adminAuth,
-  isAuthorizedAdmin,
-} from "./firebase/firebase";
-
+import { lazy, Suspense, useEffect, useState } from "react";
 import Welcome from "./components/home/Welcome";
 import Home from "./components/home/Home";
-
-import About from "./components/sections/About";
-import Experience from "./components/sections/experience";
-import Projects from "./components/sections/Projects";
-import Skills from "./components/sections/Skills";
-import Education from "./components/sections/Education";
-import Certifications from "./components/sections/Certifications";
-import Resume from "./components/sections/Resume";
-import Contact from "./components/sections/Contact";
-import Game from "./components/sections/Game";
-
-import Admin from "./components/admin/Admin";
-import AdminLogin from "./components/admin/AdminLogin";
+import { publicSections, SectionNavigationContext } from "./data/portfolioNavigation";
 import { getAdminSection } from "./utils/adminPath";
 
-function App() {
-  const isAdminPage = getAdminSection() !== null;
+const About = lazy(() => import("./components/sections/About"));
+const Experience = lazy(() => import("./components/sections/experience"));
+const Projects = lazy(() => import("./components/sections/Projects"));
+const Skills = lazy(() => import("./components/sections/Skills"));
+const Education = lazy(() => import("./components/sections/Education"));
+const Certifications = lazy(() => import("./components/sections/Certifications"));
+const Resume = lazy(() => import("./components/sections/Resume"));
+const Contact = lazy(() => import("./components/sections/Contact"));
+const Game = lazy(() => import("./components/sections/Game"));
+const AdminRoute = lazy(() => import("./components/admin/AdminRoute"));
 
-  const [
-    started,
-    setStarted,
-  ] = useState(false);
-
-  const [
-    activeSection,
-    setActiveSection,
-  ] = useState(null);
-
-  const [
-    adminUser,
-    setAdminUser,
-  ] = useState(null);
-
-  const [
-    checkingAuth,
-    setCheckingAuth,
-  ] = useState(
-    isAdminPage
-  );
-
-  /*
-  ========================================================
-  ADMIN AUTHENTICATION
-  ========================================================
-
-  The game uses Firebase Anonymous Authentication.
-
-  Anonymous players must never be treated as portfolio
-  administrators.
-
-  The exact Admin UID is required by the UI and security rules.
-  ========================================================
-  */
-
-  useEffect(() => {
-    /*
-    The normal portfolio does not need an admin
-    authentication listener.
-
-    Game authentication is handled separately by the
-    player system.
-    */
-
-    if (!isAdminPage) {
-      return undefined;
-    }
-
-    const unsubscribe = onAuthStateChanged(
-      adminAuth,
-        (user) => {
-          /*
-          Anonymous Firebase users belong to the game.
-
-          They are not admin users.
-          */
-
-          if (
-            isAuthorizedAdmin(user)
-          ) {
-            setAdminUser(
-              user
-            );
-          } else {
-            setAdminUser(
-              null
-            );
-          }
-
-          setCheckingAuth(
-            false
-          );
-        },
-        (error) => {
-          console.error(
-            "Admin authentication check failed:",
-            error
-          );
-
-          setAdminUser(
-            null
-          );
-
-          setCheckingAuth(
-            false
-          );
-        }
-      );
-
-    return unsubscribe;
-  }, [isAdminPage]);
-
-  /*
-  ========================================================
-  PORTFOLIO NAVIGATION
-  ========================================================
-  */
-
-  const handleOpenSection =
-    (section) => {
-      setActiveSection(
-        section
-      );
-    };
-
-  const handleBackHome =
-    () => {
-      setActiveSection(
-        null
-      );
-    };
-
-  /*
-  ========================================================
-  ADMIN AREA
-  ========================================================
-  */
-
-  if (isAdminPage) {
-    if (checkingAuth) {
-      return (
-        <main
-          style={{
-            minHeight:
-              "100vh",
-
-            display:
-              "grid",
-
-            placeItems:
-              "center",
-
-            padding:
-              "24px",
-
-            background:
-              "#f4f6f8",
-
-            color:
-              "#7d858d",
-
-            fontSize:
-              "12px",
-
-            textAlign:
-              "center",
-          }}
-        >
-          Checking access...
-        </main>
-      );
-    }
-
-    if (!adminUser) {
-      return (
-        <AdminLogin
-          onLogin={(
-            user
-          ) => {
-            /*
-            Extra protection in case AdminLogin is ever
-            changed later.
-
-            Never accept an anonymous Firebase account
-            as an admin.
-            */
-
-            if (
-              isAuthorizedAdmin(user)
-            ) {
-              setAdminUser(
-                user
-              );
-            } else {
-              setAdminUser(
-                null
-              );
-            }
-          }}
-        />
-      );
-    }
-
-    return (
-      <Admin />
-    );
-  }
-
-  /*
-  ========================================================
-  WELCOME SCREEN
-  ========================================================
-  */
-
-  if (!started) {
-    return (
-      <Welcome
-        onEnter={() =>
-          setStarted(
-            true
-          )
-        }
-      />
-    );
-  }
-
-  /*
-  ========================================================
-  PORTFOLIO SECTIONS
-  ========================================================
-  */
-
-  if (activeSection) {
-   const pages = {
-  about:
-    About,
-
-  experience:
-    Experience,
-
-  projects:
-    Projects,
-
-  skills:
-    Skills,
-
-  education:
-    Education,
-
-  certifications:
-    Certifications,
-
-  resume:
-    Resume,
-
-  contact:
-    Contact,
-
-  game:
-    Game,
+const pages = {
+  about: About,
+  experience: Experience,
+  projects: Projects,
+  skills: Skills,
+  education: Education,
+  certifications: Certifications,
+  resume: Resume,
+  game: Game,
+  contact: Contact,
 };
-    const Page =
-      pages[
-        activeSection.id
-      ];
 
-    if (Page) {
-      return (
-        <Page
-          onBack={
-            handleBackHome
-          }
-        />
-      );
-    }
-  }
-
-  /*
-  ========================================================
-  HOME
-  ========================================================
-  */
-
-  return (
-    <Home
-      onOpenSection={
-        handleOpenSection
-      }
-    />
-  );
+function LoadingPage({ label }) {
+  return <main role="status" style={{ minHeight: "100dvh", display: "grid", placeItems: "center", padding: 24, background: "#fbfdff", color: "#52709c", fontFamily: "Inter, ui-sans-serif, system-ui, sans-serif" }}>Opening {label}…</main>;
 }
 
-export default App;
+export default function App() {
+  const isAdminPage = getAdminSection() !== null;
+  const [started, setStarted] = useState(false);
+  const [activeSection, setActiveSection] = useState(null);
+
+  useEffect(() => {
+    if (isAdminPage) return undefined;
+    // A fresh page load always begins at Welcome, even after Home was reloaded.
+    // Same-document Back/Forward still uses the entries created below.
+    window.history.replaceState(null, "");
+    const syncHistory = () => {
+      const view = window.history.state?.portfolioView;
+      setStarted(Boolean(view));
+      setActiveSection(publicSections.find((item) => item.id === view) || null);
+    };
+    window.addEventListener("popstate", syncHistory);
+    return () => window.removeEventListener("popstate", syncHistory);
+  }, [isAdminPage]);
+
+  const openSection = (section) => {
+    const item = publicSections.find((entry) => entry.id === section?.id);
+    if (!item) return;
+    window.history.pushState({ portfolioView: item.id }, "");
+    setActiveSection(item);
+  };
+
+  const backHome = () => {
+    window.history.pushState({ portfolioView: "home" }, "");
+    setActiveSection(null);
+  };
+
+  if (isAdminPage) return <Suspense fallback={<LoadingPage label="Admin" />}><AdminRoute /></Suspense>;
+
+  if (!started) return <Welcome onEnter={() => {
+    window.history.pushState({ portfolioView: "home" }, "");
+    setStarted(true);
+  }} />;
+
+  if (activeSection) {
+    const Page = pages[activeSection.id];
+    if (Page) {
+      const index = publicSections.findIndex((item) => item.id === activeSection.id);
+      const navigation = {
+        previous: publicSections[(index - 1 + publicSections.length) % publicSections.length],
+        next: publicSections[(index + 1) % publicSections.length],
+        open: (id) => openSection(publicSections.find((item) => item.id === id)),
+      };
+      return <SectionNavigationContext.Provider value={navigation}>
+        <Suspense fallback={<LoadingPage label={activeSection.label || "section"} />}>
+          <Page onBack={backHome} onNavigate={navigation.open} />
+        </Suspense>
+      </SectionNavigationContext.Provider>;
+    }
+  }
+
+  return <Home onOpenSection={openSection} />;
+}

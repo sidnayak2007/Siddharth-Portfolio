@@ -1,10 +1,25 @@
-import { useId, useState } from "react";
+import { useEffect, useId, useRef, useState } from "react";
 import { uploadPortfolioFile } from "../../cloudinary/portfolioUpload";
 import { safeHref } from "../../utils/url";
 import AdminShell from "./AdminShell";
 
 export function EditorPage({ sectionId, number, title, description, editor, onSave, PreviewComponent, children }) {
   const [previewOpen, setPreviewOpen] = useState(false);
+  const previewTrigger = useRef(null);
+  const closePreview = () => {
+    setPreviewOpen(false);
+    window.requestAnimationFrame(() => previewTrigger.current?.focus());
+  };
+  useEffect(() => {
+    if (!previewOpen) return undefined;
+    const onEscape = (event) => {
+      if (event.key !== "Escape") return;
+      setPreviewOpen(false);
+      window.requestAnimationFrame(() => previewTrigger.current?.focus());
+    };
+    document.addEventListener("keydown", onEscape);
+    return () => document.removeEventListener("keydown", onEscape);
+  }, [previewOpen]);
   const saving = editor.status === "saving";
   const status = editor.loading ? "Loading" : saving ? "Saving" : editor.dirty ? "Unsaved changes" : editor.status === "saved" ? "Saved" : "No unsaved changes";
 
@@ -39,7 +54,7 @@ export function EditorPage({ sectionId, number, title, description, editor, onSa
           <div className="admin-sticky-actions">
             <span className={`admin-save-state ${editor.dirty ? "dirty" : ""}`} role="status">{status}</span>
             <div>
-              {PreviewComponent && <button type="button" className="admin-secondary-button" onClick={() => setPreviewOpen(true)}>Live preview</button>}
+              {PreviewComponent && <button ref={previewTrigger} type="button" className="admin-secondary-button" onClick={() => setPreviewOpen(true)}>Live preview</button>}
               <button type="button" className="admin-save" onClick={onSave} disabled={saving || !editor.dirty}>
                 {saving ? "Saving…" : "Save changes"}
               </button>
@@ -49,12 +64,18 @@ export function EditorPage({ sectionId, number, title, description, editor, onSa
       )}
 
       {previewOpen && PreviewComponent && (
-        <div className="admin-preview-overlay" role="dialog" aria-modal="true" aria-label={`${title} live preview`}>
+        <div className="admin-preview-overlay" role="dialog" aria-modal="true" aria-label={`${title} live preview`} onKeyDown={(event) => {
+          if (event.key !== "Tab") return;
+          const controls = [...event.currentTarget.querySelectorAll('a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])')];
+          if (!controls.length) return;
+          if (event.shiftKey && document.activeElement === controls[0]) { event.preventDefault(); controls.at(-1).focus(); }
+          if (!event.shiftKey && document.activeElement === controls.at(-1)) { event.preventDefault(); controls[0].focus(); }
+        }}>
           <div className="admin-preview-toolbar">
             <div><strong>Live preview</strong><span>Unsaved changes are visible only here.</span></div>
-            <button type="button" onClick={() => setPreviewOpen(false)} autoFocus>Close preview</button>
+            <button type="button" onClick={closePreview} autoFocus>Close preview</button>
           </div>
-          <div className="admin-preview-content"><PreviewComponent previewData={editor.value} onBack={() => setPreviewOpen(false)} /></div>
+          <div className="admin-preview-content"><PreviewComponent previewData={editor.value} onBack={closePreview} /></div>
         </div>
       )}
     </AdminShell>
@@ -159,6 +180,7 @@ export function StringList({ values = [], onChange, addLabel = "Add item", place
 export function MediaUploadField({ kind = "image", value, onChange, label, fallbackUrl }) {
   const inputId = useId();
   const [uploading, setUploading] = useState(false);
+  const [progress, setProgress] = useState(0);
   const [error, setError] = useState("");
   const [notice, setNotice] = useState("");
   const chooseFile = async (event) => {
@@ -166,10 +188,11 @@ export function MediaUploadField({ kind = "image", value, onChange, label, fallb
     event.target.value = "";
     if (!file) return;
     setUploading(true);
+    setProgress(0);
     setError("");
     setNotice("");
     try {
-      const uploaded = await uploadPortfolioFile({ file, kind });
+      const uploaded = await uploadPortfolioFile({ file, kind, onProgress: setProgress });
       onChange(uploaded);
       setNotice("Uploaded to Cloudinary. Save changes to publish it.");
     } catch (uploadError) {
@@ -222,6 +245,10 @@ export function MediaUploadField({ kind = "image", value, onChange, label, fallb
           <input type="url" inputMode="url" value={value?.url || ""} placeholder="https://example.com/resume.pdf" onChange={editPdfUrl} onBlur={validatePdfUrl} disabled={uploading} />
         </label>
       )}
+      {uploading && <div className="admin-upload-progress" role="progressbar" aria-label={`${label} upload`} aria-valuenow={progress} aria-valuemin="0" aria-valuemax="100">
+        <span style={{ width: `${progress}%` }} />
+        <small>{progress < 100 ? `Uploading ${progress}%` : "Processing upload…"}</small>
+      </div>}
       {error && <p className="admin-upload-error" role="alert">{error}</p>}
       {notice && <p className="admin-upload-notice" role="status">{notice}</p>}
     </div>

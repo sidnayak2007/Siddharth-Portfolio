@@ -24,7 +24,7 @@ export function validatePortfolioFile(file, kind = "image") {
   }
 }
 
-export async function uploadPortfolioFile({ file, kind = "image" }) {
+export async function uploadPortfolioFile({ file, kind = "image", onProgress }) {
   if (!isAuthorizedAdmin(adminAuth.currentUser)) {
     throw new Error("Sign in to Admin before uploading a file.");
   }
@@ -35,18 +35,21 @@ export async function uploadPortfolioFile({ file, kind = "image" }) {
   body.append("file", file);
   body.append("upload_preset", CLOUDINARY_UPLOAD_PRESET);
 
-  let response;
-  try {
-    response = await fetch(
-      `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`,
-      { method: "POST", body },
-    );
-  } catch {
-    throw new Error("Could not reach Cloudinary. Check your connection and try again.");
-  }
-
-  const result = await response.json().catch(() => ({}));
-  if (!response.ok || typeof result.secure_url !== "string") {
+  const { status, result } = await new Promise((resolve, reject) => {
+    const request = new XMLHttpRequest();
+    request.open("POST", `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`);
+    request.upload.addEventListener("progress", (event) => {
+      if (event.lengthComputable) onProgress?.(Math.round((event.loaded / event.total) * 100));
+    });
+    request.addEventListener("load", () => {
+      let payload = {};
+      try { payload = JSON.parse(request.responseText); } catch { /* Invalid response is handled below. */ }
+      resolve({ status: request.status, result: payload });
+    });
+    request.addEventListener("error", () => reject(new Error("Could not reach Cloudinary. Check your connection and try again.")));
+    request.send(body);
+  });
+  if (status < 200 || status >= 300 || typeof result.secure_url !== "string") {
     throw new Error(result.error?.message || "Cloudinary upload failed. Please try again.");
   }
 

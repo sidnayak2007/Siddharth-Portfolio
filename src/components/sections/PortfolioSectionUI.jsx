@@ -1,5 +1,6 @@
-import { useEffect, useRef, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import { safeHref } from "../../utils/url";
+import { SectionNavigationContext } from "../../data/portfolioNavigation";
 import PortfolioImage from "./PortfolioImage";
 import "../../css/portfolio-sections.css";
 
@@ -40,6 +41,7 @@ export function PortfolioSection({
   onRetry,
   children,
 }) {
+  const navigation = useContext(SectionNavigationContext);
   const [leaving, setLeaving] = useState(false);
   const leaveTimer = useRef(null);
 
@@ -100,6 +102,16 @@ export function PortfolioSection({
           </p>
         ) : (
           <div className="portfolio-section-content">{children}</div>
+        )}
+        {navigation && (
+          <nav className="portfolio-section-adjacent" aria-label="Other portfolio sections">
+            <button type="button" onClick={() => navigation.open(navigation.previous.id)} aria-label={`Previous section: ${navigation.previous.label}`}>
+              <span aria-hidden="true">←</span> {navigation.previous.label}
+            </button>
+            <button type="button" onClick={() => navigation.open(navigation.next.id)} aria-label={`Next section: ${navigation.next.label}`}>
+              {navigation.next.label} <span aria-hidden="true">→</span>
+            </button>
+          </nav>
         )}
       </div>
       {onBack && (

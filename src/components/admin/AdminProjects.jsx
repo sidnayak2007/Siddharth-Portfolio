@@ -5,7 +5,7 @@ import Projects from "../sections/Projects";
 import { CheckboxField, EditorPage, EditorSection, EntryCard, Field, MediaListEditor, MediaUploadField, StringList } from "./AdminEditorUI";
 
 const projectTypes = ["Website", "Web app", "Mobile app", "Game", "Research", "Campaign", "Digital experience", "Other"];
-const emptyProject = () => ({ id: createContentId("project"), title: "", type: "", description: "", details: "", startDate: "", endDate: "", technologies: [], skills: [], contributors: [], projectUrl: "", githubUrl: "", imageUrl: "", imagePath: "", media: [], featured: false, visible: false });
+const emptyProject = () => ({ id: createContentId("project"), title: "", type: "", description: "", details: "", contribution: "", aiProcess: "", challenges: "", startDate: "", endDate: "", technologies: [], skills: [], contributors: [], projectUrl: "", githubUrl: "", imageUrl: "", imagePath: "", media: [], featured: false, visible: false });
 const cleanList = (items) => (Array.isArray(items) ? items : []).map((item) => String(item || "").trim()).filter(Boolean);
 function validWebUrl(value) {
   if (!value) return true;
@@ -42,6 +42,9 @@ export default function AdminProjects() {
         type: String(item.type || "").trim(),
         description: String(item.description || "").trim(),
         details: String(item.details || "").trim(),
+        contribution: String(item.contribution || "").trim(),
+        aiProcess: String(item.aiProcess || "").trim(),
+        challenges: String(item.challenges || "").trim(),
         startDate: String(item.startDate || "").trim(),
         endDate: String(item.endDate || "").trim(),
         technologies: cleanList(item.technologies),
@@ -82,6 +85,9 @@ export default function AdminProjects() {
                 <Field label="Project type" value={item.type} onChange={(value) => updateItem(index, "type", value)} options={[...new Set([...projectTypes, item.type].filter(Boolean))]} />
                 <Field label="Description" value={item.description} onChange={(value) => updateItem(index, "description", value)} multiline full required />
                 <Field label="Detailed overview" value={item.details} onChange={(value) => updateItem(index, "details", value)} multiline full rows={5} />
+                <Field label="My contribution" value={item.contribution} onChange={(value) => updateItem(index, "contribution", value)} multiline full rows={4} help="Describe only the work you actually did." />
+                <Field label="AI-assisted development process" value={item.aiProcess} onChange={(value) => updateItem(index, "aiProcess", value)} multiline full rows={4} />
+                <Field label="Challenges solved" value={item.challenges} onChange={(value) => updateItem(index, "challenges", value)} multiline full rows={4} />
                 <Field label="Start month" value={item.startDate} onChange={(value) => updateItem(index, "startDate", value)} type="month" />
                 <Field label="End month" value={item.endDate} onChange={(value) => updateItem(index, "endDate", value)} type="month" />
                 <Field label="Live website URL" value={item.projectUrl} onChange={(value) => updateItem(index, "projectUrl", value)} type="url" />

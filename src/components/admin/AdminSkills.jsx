@@ -78,7 +78,10 @@ export default function AdminSkills() {
             const skills = (Array.isArray(category.skills) ? category.skills : []).map(asSkill);
             return (
               <EntryCard key={category.id || categoryIndex} title={category.title} subtitle={`${skills.length} skills`} index={categoryIndex} first={categoryIndex === 0} last={categoryIndex === categories.length - 1} onMoveUp={() => update("categories", moveArrayItem(categories, categoryIndex, -1))} onMoveDown={() => update("categories", moveArrayItem(categories, categoryIndex, 1))} onRemove={() => update("categories", categories.filter((_, index) => index !== categoryIndex))}>
-                <div className="admin-form-grid"><Field label="Category name" value={category.title} onChange={(value) => updateCategory(categoryIndex, { title: value })} required full /></div>
+                <div className="admin-form-grid">
+                  <Field label="Category name" value={category.title} onChange={(value) => updateCategory(categoryIndex, { title: value })} required />
+                  <Field label="Public group" value={category.group || ""} onChange={(value) => updateCategory(categoryIndex, { group: value })} options={["Finance", "Technical Skills", "Professional Skills"]} help="Choose where this category appears. Existing categories keep an automatic group until set." />
+                </div>
                 <div className="admin-subeditor">
                   <h3>Skills</h3>
                   {skills.length === 0 && <p className="admin-inline-empty">Add the first skill to this category.</p>}

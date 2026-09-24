@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { contactFallback } from "../../data/portfolioDefaults";
 import { usePublicPortfolioDocument } from "../../hooks/usePublicPortfolioDocument";
 import { safeHref } from "../../utils/url";
@@ -9,6 +10,7 @@ import {
 } from "./PortfolioSectionUI";
 
 export default function Contact({ onBack, previewData }) {
+  const [copyState, setCopyState] = useState({ id: null, message: "" });
   const { data, loading, error, retry } = usePublicPortfolioDocument(
     "contact",
     contactFallback,
@@ -45,9 +47,10 @@ export default function Contact({ onBack, previewData }) {
         />
       )}
 
-      {links.map((item, index) => (
-        <PortfolioCard
-          key={item.id || `contact-${index}`}
+      {links.map((item, index) => {
+        const id = item.id || `contact-${index}`;
+        return <PortfolioCard
+          key={id}
           title={item.label || "Contact"}
           subtitle={item.value}
         >
@@ -55,9 +58,27 @@ export default function Contact({ onBack, previewData }) {
             <PortfolioLink href={item.url}>
               {item.label || item.value || "Open link"}
             </PortfolioLink>
+            {item.value && (
+              <button
+                type="button"
+                className="portfolio-copy-button"
+                aria-label={`Copy ${item.label || "contact detail"}`}
+                onClick={async () => {
+                  try {
+                    await navigator.clipboard.writeText(item.value);
+                    setCopyState({ id, message: "Copied" });
+                  } catch {
+                    setCopyState({ id, message: "Could not copy" });
+                  }
+                }}
+              >
+                {copyState.id === id ? copyState.message : "Copy detail"}
+              </button>
+            )}
           </div>
-        </PortfolioCard>
-      ))}
+          {copyState.id === id && <span className="portfolio-visually-hidden" role="status">{copyState.message}</span>}
+        </PortfolioCard>;
+      })}
     </PortfolioSection>
   );
 }

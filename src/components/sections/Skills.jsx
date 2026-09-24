@@ -34,6 +34,16 @@ function normaliseSkill(value) {
   };
 }
 
+const skillGroups = ["Finance", "Technical Skills", "Professional Skills"];
+
+function groupFor(category) {
+  if (skillGroups.includes(category.group)) return category.group;
+  const title = String(category.title || "").toLowerCase();
+  if (/finance|account|investment|banking/.test(title)) return "Finance";
+  if (/web|develop|technical|technology|software|program|cod(e|ing)|digital tool/.test(title)) return "Technical Skills";
+  return "Professional Skills";
+}
+
 export default function Skills({ onBack, previewData }) {
   const { data, loading, error, retry } = usePublicPortfolioDocument(
     "skills",
@@ -83,7 +93,10 @@ export default function Skills({ onBack, previewData }) {
         />
       )}
 
-      {categories.map((category, index) => {
+      {skillGroups.filter((group) => categories.some((category) => groupFor(category) === group)).map((group) => (
+        <section className="portfolio-skill-group" key={group} aria-label={group}>
+          <h2>{group}</h2>
+          {categories.filter((category) => groupFor(category) === group).map((category, index) => {
         const skills = (
           Array.isArray(category.skills) ? category.skills : []
         )
@@ -159,7 +172,9 @@ export default function Skills({ onBack, previewData }) {
             )}
           </PortfolioCard>
         );
-      })}
+          })}
+        </section>
+      ))}
     </PortfolioSection>
   );
 }

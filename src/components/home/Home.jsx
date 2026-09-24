@@ -109,6 +109,18 @@ const menuItems = [
   },
 ];
 
+const centerSummaries = {
+  about: "The person behind the work.",
+  experience: "Roles and learning by doing.",
+  projects: "Ideas turned into products.",
+  skills: "Tools and ways of working.",
+  education: "Qualifications and learning.",
+  certifications: "Courses and credentials.",
+  resume: "Experience at a glance.",
+  game: "Play Keep It Together.",
+  contact: "Let's connect.",
+};
+
 function Home({ onOpenSection }) {
   const [activeId, setActiveId] = useState("projects");
   const [opening, setOpening] = useState(false);
@@ -128,6 +140,7 @@ function Home({ onOpenSection }) {
   };
 
   const handleKeyDown = (event, index) => {
+    if (opening) return;
     if (!["ArrowRight", "ArrowLeft", "ArrowUp", "ArrowDown"].includes(event.key)) return;
     event.preventDefault();
     const step = event.key === "ArrowRight" || event.key === "ArrowDown" ? 1 : -1;
@@ -149,7 +162,9 @@ function Home({ onOpenSection }) {
           <div className="ps-wheel-center" aria-live="polite">
             <span className="ps-center-mark">SN</span>
             <strong>Siddharth Nayak</strong>
+            <span className="ps-center-identity">BBA · Business &amp; Technology</span>
             <span className="ps-center-selected">{activeItem.label}</span>
+            <span className="ps-center-description">{centerSummaries[activeItem.id]}</span>
           </div>
           {menuItems.map((item, index) => (
             <button id={`portfolio-card-${item.id}`} key={item.id} type="button"
@@ -337,6 +352,13 @@ EDUCATION
           Explore {activeItem.label}
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14m-5-5 5 5-5 5" /></svg>
         </button>
+        <nav className="ps-home-shortcuts" aria-label="Quick access">
+          {menuItems.filter((item) => item.id === "resume" || item.id === "contact").map((item) => (
+            <button key={item.id} type="button" disabled={opening} onClick={() => onOpenSection?.(item)}>
+              {item.label} <span aria-hidden="true">↗</span>
+            </button>
+          ))}
+        </nav>
       </section>
     </main>
   );
