@@ -2,15 +2,19 @@ import { useState } from "react";
 
 import {
   signInWithEmailAndPassword,
+  signOut,
 } from "firebase/auth";
 
 import {
   adminAuth,
+  isAuthorizedAdmin,
 } from "../../firebase/firebase";
 
 import "../../css/admin-login.css";
+import { portfolioPath } from "../../utils/adminPath";
 
 function getLoginErrorMessage(error) {
+  if (error?.message === "This account is not authorised for Admin.") return error.message;
   switch (error?.code) {
     case "auth/too-many-requests":
       return "Too many login attempts. Please try again later.";
@@ -112,12 +116,10 @@ function AdminLogin({
       anonymous, but we verify it anyway because
       the game also uses Firebase Authentication.
       */
-      if (
-        !result.user ||
-        result.user.isAnonymous
-      ) {
+      if (!isAuthorizedAdmin(result.user)) {
+        await signOut(adminAuth);
         throw new Error(
-          "Anonymous users cannot access the admin area."
+          "This account is not authorised for Admin."
         );
       }
 
@@ -161,7 +163,7 @@ function AdminLogin({
         className="admin-login-back"
         onClick={() => {
           window.location.href =
-            "/";
+            portfolioPath();
         }}
         aria-label="Return to portfolio"
       >

@@ -9,6 +9,7 @@ import {
 
 import {
   adminAuth,
+  isAuthorizedAdmin,
 } from "./firebase/firebase";
 
 import Welcome from "./components/home/Welcome";
@@ -25,15 +26,10 @@ import Game from "./components/sections/Game";
 
 import Admin from "./components/admin/Admin";
 import AdminLogin from "./components/admin/AdminLogin";
+import { getAdminSection } from "./utils/adminPath";
 
 function App() {
-  const path =
-    window.location.pathname;
-
-  const isAdminPage =
-    path === "/admin" ||
-    path === "/admin/" ||
-    path.startsWith("/admin/");
+  const isAdminPage = getAdminSection() !== null;
 
   const [
     started,
@@ -67,8 +63,7 @@ function App() {
   Anonymous players must never be treated as portfolio
   administrators.
 
-  Only a non-anonymous Firebase account is allowed through
-  the admin UI check.
+  The exact Admin UID is required by the UI and security rules.
   ========================================================
   */
 
@@ -85,9 +80,8 @@ function App() {
       return undefined;
     }
 
-    const unsubscribe =
-  onAuthStateChanged(
-    adminAuth,
+    const unsubscribe = onAuthStateChanged(
+      adminAuth,
         (user) => {
           /*
           Anonymous Firebase users belong to the game.
@@ -96,8 +90,7 @@ function App() {
           */
 
           if (
-            user &&
-            !user.isAnonymous
+            isAuthorizedAdmin(user)
           ) {
             setAdminUser(
               user
@@ -207,8 +200,7 @@ function App() {
             */
 
             if (
-              user &&
-              !user.isAnonymous
+              isAuthorizedAdmin(user)
             ) {
               setAdminUser(
                 user

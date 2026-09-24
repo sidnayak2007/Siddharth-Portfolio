@@ -800,3 +800,29 @@
     transition: none;
   }
 }
+
+/* Keep authentication copy legible at desktop and phone widths. */
+.admin-login-eyebrow {
+  font-size: 11px;
+}
+
+.admin-login-form label > span,
+.admin-login-error {
+  font-size: 13px;
+}
+
+.admin-login-form input,
+.admin-login-submit {
+  font-size: 14px;
+}
+
+.admin-login-footer {
+  font-size: 10px;
+  line-height: 1.5;
+}
+
+@media (max-width: 390px) {
+  .admin-login-card > p {
+    font-size: 13px;
+  }
+}

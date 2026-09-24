@@ -1,3 +1,6 @@
+import { useEffect, useState } from "react";
+import { doc, getDocFromServer } from "firebase/firestore";
+import { adminAuth, adminDb, isAuthorizedAdmin } from "../../firebase/firebase";
 import AdminAbout from "./AdminAbout";
 import AdminContact from "./AdminContact";
 import AdminEducation from "./AdminEducation";
@@ -7,6 +10,7 @@ import AdminResume from "./AdminResume";
 import AdminShell from "./AdminShell";
 import AdminSkills from "./AdminSkills";
 import { ADMIN_SECTIONS } from "./adminConfig";
+import { adminPath, getAdminSection } from "../../utils/adminPath";
 
 import "../../css/admin.css";
 
@@ -21,24 +25,34 @@ const EDITORS = {
 };
 
 function AdminDashboard() {
+  const [connection, setConnection] = useState("checking");
+
+  useEffect(() => {
+    let active = true;
+    getDocFromServer(doc(adminDb, "portfolio", "about"))
+      .then(() => { if (active) setConnection("connected"); })
+      .catch(() => { if (active) setConnection("unavailable"); });
+    return () => { active = false; };
+  }, []);
+
   return (
     <AdminShell activeSection="dashboard">
       <div className="admin-page-heading">
         <div>
           <span className="admin-eyebrow">OVERVIEW</span>
-          <h1>Dashboard</h1>
-          <p>Manage every public portfolio section from one Firebase-connected workspace.</p>
+          <h1>Welcome back</h1>
+          <p>Manage the seven sections of your portfolio, preview changes, then publish when ready.</p>
         </div>
-        <div className="admin-online">
+        <div className={`admin-online ${connection}`}>
           <span aria-hidden="true" />
-          <div><small>CMS STATUS</small><strong>Ready</strong></div>
+          <div><small>FIRESTORE</small><strong>{connection === "checking" ? "Checking…" : connection === "connected" ? "Connected" : "Unavailable"}</strong></div>
         </div>
       </div>
 
       <div className="admin-summary-grid">
-        <article><span>EDITORS</span><strong>{ADMIN_SECTIONS.length}</strong><p>All portfolio content editors are connected.</p></article>
-        <article><span>STORAGE</span><strong>ON</strong><p>Images and the resume PDF upload directly.</p></article>
-        <article><span>GAME</span><strong>SAFE</strong><p>Player identity remains separate from Admin auth.</p></article>
+        <article><span>CONTENT SECTIONS</span><strong>{ADMIN_SECTIONS.length}</strong><p>Editors available in this CMS.</p></article>
+        <article><span>ADMIN SESSION</span><strong>{isAuthorizedAdmin(adminAuth.currentUser) ? "Verified" : "Checking"}</strong><p>Access is checked against the Admin UID.</p></article>
+        <article><span>FIRESTORE READ</span><strong>{connection === "checking" ? "Checking" : connection === "connected" ? "Online" : "Failed"}</strong><p>{connection === "unavailable" ? "Open an editor to see the connection error and retry." : "A server read checks whether content is reachable."}</p></article>
       </div>
 
       <section className="admin-section-panel">
@@ -52,14 +66,14 @@ function AdminDashboard() {
               key={section.id}
               type="button"
               className="admin-section-row"
-              onClick={() => window.location.assign("/admin/" + section.id)}
+              onClick={() => window.location.assign(adminPath(section.id))}
             >
               <span className="admin-section-number">{section.number}</span>
               <div className="admin-section-copy">
                 <strong>{section.title}</strong>
                 <p>{section.description}</p>
               </div>
-              <span className="admin-section-status ready">Editor live</span>
+              <span className="admin-section-status ready">Open editor</span>
               <span className="admin-section-arrow" aria-hidden="true">→</span>
             </button>
           ))}
@@ -76,7 +90,7 @@ function AdminNotFound() {
         <span className="admin-eyebrow">ADMIN / 404</span>
         <h1>Section not found.</h1>
         <p>This route is not part of the portfolio CMS.</p>
-        <button type="button" className="admin-primary-button" onClick={() => window.location.assign("/admin")}>
+        <button type="button" className="admin-primary-button" onClick={() => window.location.assign(adminPath())}>
           Return to dashboard
         </button>
       </section>
@@ -85,7 +99,7 @@ function AdminNotFound() {
 }
 
 export default function Admin() {
-  const sectionId = window.location.pathname.split("/")[2]?.trim().toLowerCase() || "";
+  const sectionId = getAdminSection() || "";
   if (!sectionId) return <AdminDashboard />;
   const Editor = EDITORS[sectionId];
   return Editor ? <Editor /> : <AdminNotFound />;

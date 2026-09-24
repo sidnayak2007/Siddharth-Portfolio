@@ -311,7 +311,7 @@
 
   isolation: isolate;
 
-  touch-action: none;
+  touch-action: auto;
 
   user-select: none;
 
@@ -340,6 +340,7 @@
 
 .ob-stage--playing {
   cursor: crosshair;
+  touch-action: none;
 }
 
 .ob-canvas {
@@ -1124,6 +1125,81 @@
   gap: 10px;
 
   margin-top: 23px;
+}
+
+.ob-standing-card {
+  margin-top: 14px;
+  padding: 14px 16px;
+  border: 1px solid rgba(163, 94, 67, 0.25);
+  border-radius: 12px;
+  background: linear-gradient(120deg, #f1e2d5, #faf4ea);
+}
+
+.ob-standing-heading {
+  color: #805039;
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.ob-standing-content {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  margin-top: 8px;
+}
+
+.ob-standing-rank {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.ob-standing-rank > span,
+.ob-standing-note {
+  color: #746e65;
+  font-size: 0.68rem;
+}
+
+.ob-standing-rank > strong {
+  color: #593828;
+  font-size: 1.5rem;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.ob-standing-rank small {
+  font-size: 0.75rem;
+  font-weight: 650;
+}
+
+.ob-standing-percentile {
+  min-width: 0;
+  padding-left: 18px;
+  border-left: 1px solid rgba(128, 80, 57, 0.2);
+  color: #4c433b;
+  font-size: 0.84rem;
+  line-height: 1.35;
+}
+
+.ob-standing-percentile strong {
+  color: #834833;
+  font-size: 1.1rem;
+  white-space: nowrap;
+}
+
+.ob-standing-note {
+  display: block;
+  margin-top: 8px;
+}
+
+.ob-standing-wait {
+  display: block;
+  margin-top: 8px;
+  color: #5e5148;
+  font-size: 0.8rem;
 }
 
 /* ======================================================
@@ -4279,5 +4355,233 @@
   .ob-leaderboard-done,
   .ob-audio-toggle-knob {
     transition: none;
+  }
+}
+
+/* Keep the phone layout readable while letting start and result panels scroll. */
+@media (max-width: 640px) {
+  .ob-brand-title {
+    max-width: none;
+    font-size: 0.85rem;
+  }
+
+  .ob-eyebrow,
+  .ob-gameover-tag,
+  .ob-leaderboard-kicker,
+  .ob-player-modal-kicker {
+    font-size: 0.68rem;
+  }
+
+  .ob-live-help {
+    font-size: 0.72rem;
+  }
+
+  .ob-live-audio {
+    display: none;
+  }
+
+  .ob-start-overlay,
+  .ob-gameover-overlay {
+    touch-action: pan-y;
+  }
+
+  .ob-start-card {
+    padding-top: 12px;
+  }
+
+  .ob-title {
+    font-size: clamp(2.35rem, 12vw, 3.55rem);
+    line-height: 0.98;
+  }
+
+  .ob-description {
+    font-size: 0.88rem;
+    line-height: 1.45;
+  }
+
+  .ob-player-chip strong,
+  .ob-player-chip button,
+  .ob-game-service-notice {
+    font-size: 0.8rem;
+  }
+
+  .ob-primary-button,
+  .ob-secondary-button {
+    min-height: 44px;
+    font-size: 0.86rem;
+  }
+
+  .ob-start-secondary-actions .ob-audio-toggle {
+    display: none;
+  }
+
+  .ob-start-secondary-actions {
+    display: block;
+  }
+
+  .ob-start-secondary-actions .ob-secondary-button {
+    width: 100%;
+  }
+
+  .ob-controls {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+  }
+
+  .ob-start-hint {
+    display: none;
+  }
+
+  .ob-control:first-child {
+    display: none;
+  }
+
+  .ob-control,
+  .ob-control:last-child {
+    min-width: 0;
+    min-height: 52px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 8px;
+    padding: 8px;
+  }
+
+  .ob-control strong {
+    font-size: 0.82rem;
+  }
+
+  .ob-control-icon {
+    min-width: 30px;
+    height: 30px;
+    font-size: 0.85rem;
+  }
+
+  .ob-gameover-card {
+    max-height: 100%;
+    padding: 17px 15px;
+  }
+
+  .ob-gameover-title {
+    font-size: clamp(2rem, 9vw, 2.5rem);
+  }
+
+  .ob-results {
+    margin-top: 14px;
+  }
+
+  .ob-result-label {
+    font-size: 0.66rem;
+    letter-spacing: 0.07em;
+  }
+
+  .ob-result strong {
+    font-size: 1.18rem;
+  }
+
+  .ob-gameover-detail-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 5px;
+  }
+
+  .ob-gameover-detail-grid .ob-best-card:last-child {
+    grid-column: auto;
+  }
+
+  .ob-best-card {
+    padding: 9px;
+  }
+
+  .ob-best-card span,
+  .ob-run-save-status {
+    font-size: 0.76rem;
+  }
+
+  .ob-standing-card {
+    padding: 11px 12px;
+  }
+
+  .ob-standing-content {
+    gap: 10px;
+  }
+
+  .ob-standing-percentile {
+    padding-left: 10px;
+    font-size: 0.8rem;
+  }
+
+  .ob-gameover-actions {
+    gap: 7px;
+    margin-top: 13px;
+  }
+
+  .ob-leaderboard-current-rank {
+    display: flex;
+  }
+
+  .ob-leaderboard-player-info strong {
+    max-width: 115px;
+    font-size: 0.82rem;
+  }
+
+  .ob-leaderboard-player-info span,
+  .ob-leaderboard-current-rank span {
+    font-size: 0.62rem;
+  }
+
+  .ob-leaderboard-row {
+    grid-template-columns: 42px repeat(3, minmax(0, 1fr));
+    grid-template-areas:
+      "rank name name name"
+      ". time score level";
+    min-height: 88px;
+  }
+
+  .ob-leaderboard-rank-number,
+  .ob-leaderboard-name strong {
+    font-size: 0.82rem;
+  }
+
+  .ob-leaderboard-name strong {
+    max-width: 180px;
+  }
+
+  .ob-leaderboard-mobile-label {
+    font-size: 0.62rem;
+    letter-spacing: 0.06em;
+  }
+
+  .ob-leaderboard-time strong,
+  .ob-leaderboard-score strong,
+  .ob-leaderboard-level strong {
+    font-size: 0.82rem;
+  }
+
+  .ob-leaderboard-refresh,
+  .ob-leaderboard-done,
+  .ob-leaderboard-name-button {
+    font-size: 0.78rem;
+  }
+
+  .ob-player-name-rules,
+  .ob-player-name-note,
+  .ob-player-modal-card > p {
+    font-size: 0.8rem;
+  }
+}
+
+@media (max-width: 360px) {
+  .ob-gameover-detail-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .ob-leaderboard-row {
+    grid-template-columns: 38px repeat(3, minmax(0, 1fr));
+  }
+
+  .ob-leaderboard-name strong {
+    max-width: 150px;
+    font-size: 0.8rem;
   }
 }

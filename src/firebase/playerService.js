@@ -2,12 +2,14 @@ import {
   collection,
   doc,
   getDoc,
+  getCountFromServer,
   getDocs,
   limit as firestoreLimit,
   orderBy,
   query,
   runTransaction,
   serverTimestamp,
+  where,
 } from "firebase/firestore";
 
 import {
@@ -772,4 +774,41 @@ export function findPlayerRank(
   }
 
   return index + 1;
+}
+
+// Count every completed run so a player's standing is not limited to the top 50.
+export async function getPlayerStanding({ uid, bestTime, bestScore, level, name = "" }) {
+  const time = normalizeTime(bestTime);
+  if (!uid || time <= 0) return null;
+
+  const players = collection(db, "players");
+  const [totalSnapshot, fasterSnapshot, tiedSnapshot] = await Promise.all([
+    getCountFromServer(query(players, where("bestTime", ">", 0))),
+    getCountFromServer(query(players, where("bestTime", ">", time))),
+    getDocs(query(players, where("bestTime", "==", time))),
+  ]);
+
+  const score = normalizeScore(bestScore);
+  const playerLevel = normalizeLevel(level);
+  let aheadOnTie = 0;
+  let behindOnTie = 0;
+  for (const entry of tiedSnapshot.docs) {
+    if (entry.id === uid) continue;
+    const other = entry.data();
+    const otherScore = normalizeScore(other.bestScore);
+    const otherLevel = normalizeLevel(other.level);
+    const comparison = otherScore - score || otherLevel - playerLevel;
+    if (comparison > 0) aheadOnTie += 1;
+    else if (comparison < 0) behindOnTie += 1;
+    else if ((other.name || "Player").localeCompare(name || "Player") < 0) aheadOnTie += 1;
+  }
+
+  const total = totalSnapshot.data().count;
+  const rank = fasterSnapshot.data().count + aheadOnTie + 1;
+  const slower = Math.max(0, total - fasterSnapshot.data().count - tiedSnapshot.size);
+  const betterThan = total > 1
+    ? Math.round(((slower + behindOnTie) / (total - 1)) * 100)
+    : null;
+
+  return { rank, total, betterThan };
 }

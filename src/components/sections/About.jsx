@@ -9,13 +9,13 @@ import {
   PortfolioTags,
 } from "./PortfolioSectionUI";
 
-export default function About({ onBack }) {
+export default function About({ onBack, previewData }) {
   const { data: about, loading, error, retry } =
-    usePublicPortfolioDocument("about", aboutFallback);
+    usePublicPortfolioDocument("about", aboutFallback, previewData);
 
   const links = Array.isArray(about.links) ? about.links : [];
-  const focus = Array.isArray(about.focus) ? about.focus : [];
-  const stats = Array.isArray(about.stats) ? about.stats : [];
+  const focus = Array.isArray(about.focus) ? about.focus.filter((item) => item?.visible !== false) : [];
+  const stats = Array.isArray(about.stats) ? about.stats.filter((item) => item?.visible !== false) : [];
 
   const hasMore = Boolean(
     about.description || about.quote || focus.length || stats.length

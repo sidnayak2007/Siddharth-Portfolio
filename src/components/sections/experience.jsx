@@ -16,10 +16,11 @@ function experiencePeriod(item) {
     .join(" – ");
 }
 
-export default function Experience({ onBack }) {
+export default function Experience({ onBack, previewData }) {
   const { data, loading, error, retry } = usePublicPortfolioDocument(
     "experience",
-    experienceFallback
+    experienceFallback,
+    previewData
   );
 
   const items = Array.isArray(data.items)
@@ -51,12 +52,21 @@ export default function Experience({ onBack }) {
             )
           : [];
 
+        const responsibilities = Array.isArray(item.responsibilities)
+          ? item.responsibilities.filter((value) => typeof value === "string" && value.trim())
+          : [];
+        const achievements = Array.isArray(item.achievements)
+          ? item.achievements.filter((value) => typeof value === "string" && value.trim())
+          : [];
+
         const media = Array.isArray(item.media)
           ? item.media.filter((asset) => asset && safeHref(asset.url))
           : [];
 
         const hasDetails = Boolean(
           highlights.length ||
+          responsibilities.length ||
+          achievements.length ||
           media.length ||
           safeHref(item.certificateUrl)
         );
@@ -64,6 +74,7 @@ export default function Experience({ onBack }) {
         const meta = [
           item.type,
           item.location,
+          item.locationType,
           experiencePeriod(item),
         ]
           .filter(Boolean)
@@ -88,14 +99,22 @@ export default function Experience({ onBack }) {
 
             {hasDetails && (
               <PortfolioMore label="View role details">
+                {responsibilities.length > 0 && (
+                  <div><strong>Responsibilities</strong><ul>{responsibilities.map((text, i) => <li key={`responsibility-${i}`}>{text}</li>)}</ul></div>
+                )}
+
+                {achievements.length > 0 && (
+                  <div><strong>Achievements</strong><ul>{achievements.map((text, i) => <li key={`achievement-${i}`}>{text}</li>)}</ul></div>
+                )}
+
                 {highlights.length > 0 && (
-                  <ul>
+                  <div><strong>Highlights</strong><ul>
                     {highlights.map((highlight, highlightIndex) => (
                       <li key={`${highlight}-${highlightIndex}`}>
                         {highlight}
                       </li>
                     ))}
-                  </ul>
+                  </ul></div>
                 )}
 
                 {(media.length > 0 || safeHref(item.certificateUrl)) && (

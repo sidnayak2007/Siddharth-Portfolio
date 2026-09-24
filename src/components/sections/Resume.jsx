@@ -8,10 +8,11 @@ import {
   PortfolioSection,
 } from "./PortfolioSectionUI";
 
-export default function Resume({ onBack }) {
+export default function Resume({ onBack, previewData }) {
   const { data, loading, error, retry } = usePublicPortfolioDocument(
     "resume",
-    resumeFallback
+    resumeFallback,
+    previewData
   );
 
   const timeline = Array.isArray(data.timeline)
@@ -31,15 +32,14 @@ export default function Resume({ onBack }) {
       error={error}
       onRetry={retry}
     >
-      {pdfUrl && (
-        <div className="portfolio-panel portfolio-resume-download">
-          <div>
-            <h2>Resume PDF</h2>
-            <p>{data.pdfName || "View or download my full resume."}</p>
-          </div>
-          <PortfolioLink href={pdfUrl}>View resume</PortfolioLink>
+      <div className="portfolio-panel portfolio-resume-download">
+        <div>
+          <h2>{data.title || "Resume"}</h2>
+          <p>{data.description || "An overview of my education, experience and projects."}</p>
+          {data.lastUpdated && <p>Updated {data.lastUpdated}</p>}
         </div>
-      )}
+        {pdfUrl && <PortfolioLink href={pdfUrl}>View resume</PortfolioLink>}
+      </div>
 
       {timeline.length === 0 && !loading && (
         <PortfolioEmpty

@@ -15,10 +15,6 @@ import {
   signInAnonymously,
 } from "firebase/auth";
 
-import {
-  getStorage,
-} from "firebase/storage";
-
 /* =========================================================
    FIREBASE CONFIG
 ========================================================= */
@@ -32,9 +28,6 @@ const firebaseConfig = {
 
   projectId:
     "siddharthnayak-portfolio",
-
-  storageBucket:
-    "siddharthnayak-portfolio.firebasestorage.app",
 
   messagingSenderId:
     "836526942462",
@@ -67,9 +60,6 @@ export const auth =
 
 export const db =
   getFirestore(app);
-
-export const storage =
-  getStorage(app);
 
 /* =========================================================
    SECONDARY FIREBASE APP
@@ -113,9 +103,6 @@ export const adminAuth =
 
 export const adminDb =
   getFirestore(adminApp);
-
-export const adminStorage =
-  getStorage(adminApp);
 
 /* =========================================================
    ANONYMOUS GAME PLAYER
@@ -176,3 +163,9 @@ export async function signInPlayer() {
 export {
   app,
 };
+
+export const ADMIN_UID = "2GsnovCgxlYVz46LYSM2iRicMQk1";
+
+export function isAuthorizedAdmin(user) {
+  return Boolean(user && !user.isAnonymous && user.uid === ADMIN_UID);
+}

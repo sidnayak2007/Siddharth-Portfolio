@@ -3,13 +3,14 @@ import { doc, getDoc } from "firebase/firestore";
 import { db } from "../firebase/firebase";
 
 /** Read the existing portfolio/{sectionId} document without changing its shape. */
-export function usePublicPortfolioDocument(sectionId, fallback) {
+export function usePublicPortfolioDocument(sectionId, fallback, previewData) {
   const [data, setData] = useState(fallback);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [retryToken, setRetryToken] = useState(0);
 
   useEffect(() => {
+    if (previewData !== undefined) return undefined;
     let active = true;
 
     getDoc(doc(db, "portfolio", sectionId))
@@ -34,7 +35,7 @@ export function usePublicPortfolioDocument(sectionId, fallback) {
     return () => {
       active = false;
     };
-  }, [sectionId, fallback, retryToken]);
+  }, [sectionId, fallback, retryToken, previewData]);
 
   const retry = () => {
     setLoading(true);
@@ -42,5 +43,7 @@ export function usePublicPortfolioDocument(sectionId, fallback) {
     setRetryToken((value) => value + 1);
   };
 
-  return { data, loading, error, retry };
+  return previewData === undefined
+    ? { data, loading, error, retry }
+    : { data: { ...fallback, ...previewData }, loading: false, error: "", retry };
 }

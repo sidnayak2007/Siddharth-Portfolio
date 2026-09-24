@@ -1,7 +1,9 @@
+import { useState } from "react";
 import { signOut } from "firebase/auth";
 
 import { adminAuth } from "../../firebase/firebase";
 import { ADMIN_SECTIONS } from "./adminConfig";
+import { adminPath, portfolioPath } from "../../utils/adminPath";
 
 function DashboardIcon() {
   return (
@@ -14,14 +16,22 @@ function DashboardIcon() {
   );
 }
 
-export default function AdminShell({ activeSection = "dashboard", children }) {
-  const go = (path) => window.location.assign(path);
+export default function AdminShell({ activeSection = "dashboard", dirty = false, children }) {
+  const [menuOpen, setMenuOpen] = useState(false);
+  const go = (path) => {
+    if (dirty && !window.confirm("You have unsaved changes. Leave this editor?")) return;
+    window.__portfolioAdminNavigationConfirmed = true;
+    window.location.assign(path);
+  };
 
   const handleLogout = async () => {
+    if (dirty && !window.confirm("You have unsaved changes. Leave this editor and log out?")) return;
+    window.__portfolioAdminNavigationConfirmed = true;
     try {
       await signOut(adminAuth);
-      go("/");
+      window.location.assign(portfolioPath());
     } catch (error) {
+      window.__portfolioAdminNavigationConfirmed = false;
       console.error("Admin logout failed:", error);
     }
   };
@@ -35,7 +45,7 @@ export default function AdminShell({ activeSection = "dashboard", children }) {
       </div>
 
       <header className="admin-header">
-        <button type="button" className="admin-brand" onClick={() => go("/admin")}>
+        <button type="button" className="admin-brand" onClick={() => go(adminPath())}>
           <div className="admin-brand-mark">SN</div>
           <div className="admin-brand-copy">
             <strong>Portfolio Admin</strong>
@@ -44,8 +54,11 @@ export default function AdminShell({ activeSection = "dashboard", children }) {
         </button>
 
         <div className="admin-header-actions">
-          <button type="button" className="admin-header-button" onClick={() => go("/")}>
-            View Portfolio
+          <button type="button" className="admin-header-button admin-menu-button" aria-expanded={menuOpen} aria-controls="admin-sidebar" onClick={() => setMenuOpen((open) => !open)}>
+            {menuOpen ? "Close menu" : "Menu"}
+          </button>
+          <button type="button" className="admin-header-button" onClick={() => go(portfolioPath())}>
+            Preview Portfolio
           </button>
           <button type="button" className="admin-header-button admin-logout-button" onClick={handleLogout}>
             Logout
@@ -54,13 +67,14 @@ export default function AdminShell({ activeSection = "dashboard", children }) {
       </header>
 
       <div className="admin-shell">
-        <aside className="admin-sidebar">
+        {menuOpen && <button type="button" className="admin-sidebar-backdrop" aria-label="Close navigation" onClick={() => setMenuOpen(false)} />}
+        <aside id="admin-sidebar" className={`admin-sidebar ${menuOpen ? "admin-sidebar-open" : ""}`}>
           <div className="admin-sidebar-heading"><span>NAVIGATION</span></div>
           <nav className="admin-sidebar-nav" aria-label="Admin navigation">
             <button
               type="button"
               className={"admin-sidebar-item " + (activeSection === "dashboard" ? "active" : "")}
-              onClick={() => go("/admin")}
+              onClick={() => go(adminPath())}
             >
               <DashboardIcon />
               <span>Dashboard</span>
@@ -73,7 +87,7 @@ export default function AdminShell({ activeSection = "dashboard", children }) {
                 key={section.id}
                 type="button"
                 className={"admin-sidebar-item " + (activeSection === section.id ? "active" : "")}
-                onClick={() => go("/admin/" + section.id)}
+                onClick={() => go(adminPath(section.id))}
                 aria-current={activeSection === section.id ? "page" : undefined}
               >
                 <span className="admin-sidebar-number">{section.number}</span>

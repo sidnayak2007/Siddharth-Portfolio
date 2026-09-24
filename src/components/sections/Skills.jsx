@@ -34,10 +34,11 @@ function normaliseSkill(value) {
   };
 }
 
-export default function Skills({ onBack }) {
+export default function Skills({ onBack, previewData }) {
   const { data, loading, error, retry } = usePublicPortfolioDocument(
     "skills",
-    skillsFallback
+    skillsFallback,
+    previewData
   );
 
   const { data: experience } = usePublicPortfolioDocument(

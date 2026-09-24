@@ -28,9 +28,9 @@ function textList(value) {
     : [];
 }
 
-export default function Education({ onBack }) {
+export default function Education({ onBack, previewData }) {
   const { data, loading, error, retry } =
-    usePublicPortfolioDocument("education", educationFallback);
+    usePublicPortfolioDocument("education", educationFallback, previewData);
 
   const items = Array.isArray(data.items)
     ? data.items.filter(
@@ -61,6 +61,7 @@ export default function Education({ onBack }) {
       {items.map((item, index) => {
         const highlights = textList(item.highlights);
         const awards = textList(item.awards);
+        const achievements = textList(item.achievements);
         const certifications = textList(item.certifications);
 
         const media = Array.isArray(item.media)
@@ -92,6 +93,7 @@ export default function Education({ onBack }) {
           item.grade ||
           highlights.length ||
           awards.length ||
+          achievements.length ||
           certifications.length ||
           media.length ||
           item.imageUrl
@@ -166,6 +168,13 @@ export default function Education({ onBack }) {
                         <li key={`award-${i}`}>{text}</li>
                       ))}
                     </ul>
+                  </div>
+                )}
+
+                {achievements.length > 0 && (
+                  <div>
+                    <p><strong>Achievements</strong></p>
+                    <ul>{achievements.map((text, i) => <li key={`achievement-${i}`}>{text}</li>)}</ul>
                   </div>
                 )}
 

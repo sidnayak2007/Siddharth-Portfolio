@@ -8,14 +8,15 @@ import {
   PortfolioSection,
 } from "./PortfolioSectionUI";
 
-export default function Contact({ onBack }) {
+export default function Contact({ onBack, previewData }) {
   const { data, loading, error, retry } = usePublicPortfolioDocument(
     "contact",
-    contactFallback
+    contactFallback,
+    previewData
   );
 
   const links = Array.isArray(data.links)
-    ? data.links.filter((item) => item && safeHref(item.url))
+    ? data.links.filter((item) => item && item.visible !== false && safeHref(item.url))
     : [];
 
   return (

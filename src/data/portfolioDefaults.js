@@ -28,6 +28,12 @@ export function createContentId(prefix = "item") {
 export const aboutFallback = {
   eyebrow: "ABOUT / 01",
 
+  photoUrl: "",
+  photoPath: "",
+  photoName: "",
+  location: "",
+  links: [],
+
   name: "Siddharth Nayak",
 
   headline:
@@ -289,6 +295,10 @@ export const educationFallback = {
 export const resumeFallback = {
   eyebrow:
     "RESUME / 06",
+
+  title: "Resume",
+  description: "A full overview of my education, experience and projects.",
+  lastUpdated: "",
 
   heading:
     "The story so far.",

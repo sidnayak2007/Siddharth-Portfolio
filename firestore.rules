@@ -52,18 +52,7 @@ service cloud.firestore {
         && isAdmin()
         && validUpdatedAt()
 
-        && request.resource.data.keys().hasOnly([
-          "eyebrow",
-          "name",
-          "headline",
-          "intro",
-          "description",
-          "quote",
-          "tags",
-          "stats",
-          "focus",
-          "updatedAt"
-        ])
+        && request.resource.data.keys().size() <= 40
 
         && request.resource.data.eyebrow is string
         && request.resource.data.eyebrow.size() <= 100
@@ -75,6 +64,17 @@ service cloud.firestore {
         && request.resource.data.headline is string
         && request.resource.data.headline.size() >= 1
         && request.resource.data.headline.size() <= 300
+
+        && request.resource.data.get("photoUrl", "") is string
+        && request.resource.data.get("photoUrl", "").size() <= 3000
+        && request.resource.data.get("photoPath", "") is string
+        && request.resource.data.get("photoPath", "").size() <= 1000
+        && request.resource.data.get("photoName", "") is string
+        && request.resource.data.get("photoName", "").size() <= 300
+        && request.resource.data.get("location", "") is string
+        && request.resource.data.get("location", "").size() <= 200
+        && request.resource.data.get("links", []) is list
+        && request.resource.data.get("links", []).size() <= 12
 
         && request.resource.data.intro is string
         && request.resource.data.intro.size() <= 1000
@@ -104,13 +104,7 @@ service cloud.firestore {
         && isAdmin()
         && validUpdatedAt()
 
-        && request.resource.data.keys().hasOnly([
-          "eyebrow",
-          "heading",
-          "intro",
-          "items",
-          "updatedAt"
-        ])
+        && request.resource.data.keys().size() <= 40
 
         && request.resource.data.eyebrow is string
         && request.resource.data.eyebrow.size() <= 100
@@ -135,13 +129,7 @@ service cloud.firestore {
         && isAdmin()
         && validUpdatedAt()
 
-        && request.resource.data.keys().hasOnly([
-          "eyebrow",
-          "heading",
-          "intro",
-          "items",
-          "updatedAt"
-        ])
+        && request.resource.data.keys().size() <= 40
 
         && request.resource.data.eyebrow is string
         && request.resource.data.eyebrow.size() <= 100
@@ -166,13 +154,7 @@ service cloud.firestore {
         && isAdmin()
         && validUpdatedAt()
 
-        && request.resource.data.keys().hasOnly([
-          "eyebrow",
-          "heading",
-          "intro",
-          "categories",
-          "updatedAt"
-        ])
+        && request.resource.data.keys().size() <= 40
 
         && request.resource.data.eyebrow is string
         && request.resource.data.eyebrow.size() <= 100
@@ -197,13 +179,7 @@ service cloud.firestore {
         && isAdmin()
         && validUpdatedAt()
 
-        && request.resource.data.keys().hasOnly([
-          "eyebrow",
-          "heading",
-          "intro",
-          "items",
-          "updatedAt"
-        ])
+        && request.resource.data.keys().size() <= 40
 
         && request.resource.data.eyebrow is string
         && request.resource.data.eyebrow.size() <= 100
@@ -228,16 +204,7 @@ service cloud.firestore {
         && isAdmin()
         && validUpdatedAt()
 
-        && request.resource.data.keys().hasOnly([
-          "eyebrow",
-          "heading",
-          "intro",
-          "pdfUrl",
-          "pdfPath",
-          "pdfName",
-          "timeline",
-          "updatedAt"
-        ])
+        && request.resource.data.keys().size() <= 40
 
         && request.resource.data.eyebrow is string
         && request.resource.data.eyebrow.size() <= 100
@@ -258,6 +225,13 @@ service cloud.firestore {
         && request.resource.data.pdfName is string
         && request.resource.data.pdfName.size() <= 300
 
+        && request.resource.data.get("title", "") is string
+        && request.resource.data.get("title", "").size() <= 300
+        && request.resource.data.get("description", "") is string
+        && request.resource.data.get("description", "").size() <= 1500
+        && request.resource.data.get("lastUpdated", "") is string
+        && request.resource.data.get("lastUpdated", "").size() <= 40
+
         && request.resource.data.timeline is list
         && request.resource.data.timeline.size() <= 20;
 
@@ -271,15 +245,7 @@ service cloud.firestore {
         && isAdmin()
         && validUpdatedAt()
 
-        && request.resource.data.keys().hasOnly([
-          "eyebrow",
-          "heading",
-          "intro",
-          "availabilityHeading",
-          "availabilityText",
-          "links",
-          "updatedAt"
-        ])
+        && request.resource.data.keys().size() <= 40
 
         && request.resource.data.eyebrow is string
         && request.resource.data.eyebrow.size() <= 100
@@ -316,6 +282,19 @@ service cloud.firestore {
           || documentId == "resume"
           || documentId == "contact"
         );
+    }
+
+    // Hidden contact entries are stored separately so public reads cannot
+    // retrieve unpublished email addresses or phone numbers.
+    match /portfolioPrivate/{documentId} {
+      allow read: if documentId == "contact" && isAdmin();
+      allow create, update: if documentId == "contact"
+        && isAdmin()
+        && validUpdatedAt()
+        && request.resource.data.keys().hasOnly(["links", "updatedAt"])
+        && request.resource.data.links is list
+        && request.resource.data.links.size() <= 12;
+      allow delete: if false;
     }
 
 

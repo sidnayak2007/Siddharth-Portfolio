@@ -5,6 +5,7 @@ import { signInPlayer } from "../../firebase/firebase";
 
 import {
   getLeaderboard,
+  getPlayerStanding,
   getPlayerProfile,
   savePlayerName,
   submitBestRun,
@@ -3074,6 +3075,39 @@ function drawFragments(ctx, runtime) {
 }
 
 function drawHUD(ctx, runtime) {
+  if (runtime.width <= 640) {
+    const padding = 10;
+    const width = runtime.width - padding * 2;
+    const values = [
+      ["SURVIVAL", `${runtime.elapsed.toFixed(1)}s`],
+      ["SCORE", Math.floor(runtime.score).toLocaleString()],
+      ["BLOCKS", String(runtime.blocks)],
+      ["COMBO", `${runtime.combo}×`],
+    ];
+    roundedRect(ctx, padding, padding, width, 75, 13);
+    ctx.fillStyle = "rgba(242,239,232,0.94)";
+    ctx.fill();
+    ctx.strokeStyle = "rgba(45,42,38,0.12)";
+    ctx.stroke();
+    const columnWidth = (width - 16) / values.length;
+    values.forEach(([label, value], index) => {
+      const x = padding + 8 + index * columnWidth;
+      ctx.fillStyle = "#302f2c";
+      ctx.font = "700 14px Inter, ui-sans-serif, system-ui, sans-serif";
+      ctx.fillText(value, x, padding + 27, columnWidth - 5);
+      ctx.fillStyle = "#635e57";
+      ctx.font = "700 9px Inter, ui-sans-serif, system-ui, sans-serif";
+      ctx.fillText(label, x, padding + 45);
+    });
+    roundedRect(ctx, padding + 8, padding + 60, width - 16, 4, 2);
+    ctx.fillStyle = "rgba(61,57,52,0.14)";
+    ctx.fill();
+    roundedRect(ctx, padding + 8, padding + 60, (width - 16) * runtime.difficulty, 4, 2);
+    ctx.fillStyle = "#a35e43";
+    ctx.fill();
+    return;
+  }
+
   const s =
     runtime.scale;
 
@@ -3513,6 +3547,9 @@ const [
     setRunSubmitMessage,
   ] = useState("");
 
+  const [standing, setStanding] = useState(null);
+  const [standingLoading, setStandingLoading] = useState(false);
+
   const {
     audioEnabled,
     toggleAudio,
@@ -3687,7 +3724,7 @@ const [
 
     const width =
       Math.max(
-        320,
+        1,
         Math.round(
           rect.width
         )
@@ -3695,7 +3732,7 @@ const [
 
     const height =
       Math.max(
-        360,
+        1,
         Math.round(
           rect.height
         )
@@ -4145,6 +4182,7 @@ const [
         return;
       }
 
+      setStandingLoading(true);
       setRunSubmitStatus(
         "saving"
       );
@@ -4183,6 +4221,19 @@ const [
             "Your existing leaderboard best is still higher."
           );
         }
+
+        try {
+          const nextStanding = await getPlayerStanding({
+            uid: user.uid,
+            name,
+            bestTime: result.bestTime,
+            bestScore: result.bestScore,
+            level: result.level,
+          });
+          setStanding(nextStanding);
+        } catch (standingError) {
+          console.warn("Could not load player standing:", standingError);
+        }
       } catch (error) {
         console.error(
           "Leaderboard run submission failed:",
@@ -4196,6 +4247,8 @@ const [
         setRunSubmitMessage(
           "Result saved locally, but the leaderboard could not be updated."
         );
+      } finally {
+        setStandingLoading(false);
       }
     };
 
@@ -4296,6 +4349,8 @@ const [
     setSummary(
       finalSummary
     );
+
+    setStanding(null);
 
     setPhase(
       "gameover"
@@ -4820,6 +4875,7 @@ const [
           <button
             type="button"
             className="ob-leaderboard-button"
+            aria-label="Open leaderboard"
             onClick={
               openLeaderboard
             }
@@ -5108,6 +5164,30 @@ const [
                       </strong>
                     </div>
                   </div>
+
+                  <div className="ob-standing-card" role="status" aria-live="polite">
+                      <div className="ob-standing-heading">Your global standing</div>
+                      {standing ? (
+                        <div className="ob-standing-content">
+                          <div className="ob-standing-rank">
+                            <span>Rank</span>
+                            <strong>#{standing.rank} <small>of {standing.total}</small></strong>
+                          </div>
+                          <div className="ob-standing-percentile">
+                            {standing.betterThan === null ? (
+                              <span>You are the first ranked player.</span>
+                            ) : (
+                              <span>Better than <strong>{standing.betterThan}%</strong> of ranked players</span>
+                            )}
+                          </div>
+                        </div>
+                      ) : standingLoading ? (
+                        <span className="ob-standing-wait">Calculating your rank...</span>
+                      ) : (
+                        <span className="ob-standing-wait">Global rank is unavailable right now.</span>
+                      )}
+                      {standing && <small className="ob-standing-note">Based on your best survival run.</small>}
+                    </div>
 
                   {runSubmitMessage && (
                     <div

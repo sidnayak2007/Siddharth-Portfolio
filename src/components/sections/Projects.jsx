@@ -19,14 +19,15 @@ function shortDescription(value) {
     : text;
 }
 
-export default function Projects({ onBack }) {
+export default function Projects({ onBack, previewData }) {
   const { data, loading, error, retry } = usePublicPortfolioDocument(
     "projects",
-    projectsFallback
+    projectsFallback,
+    previewData
   );
 
   const items = Array.isArray(data.items)
-    ? data.items.filter((item) => item && (item.title || item.description))
+    ? data.items.filter((item) => item && item.visible !== false && (item.title || item.description))
     : [];
 
   return (
@@ -52,6 +53,8 @@ export default function Projects({ onBack }) {
           ? item.technologies
           : [];
 
+        const skills = Array.isArray(item.skills) ? item.skills : [];
+
         const contributors = Array.isArray(item.contributors)
           ? item.contributors
           : [];
@@ -59,6 +62,8 @@ export default function Projects({ onBack }) {
         const media = Array.isArray(item.media)
           ? item.media.filter((asset) => asset && safeHref(asset.url))
           : [];
+        const gallery = media.filter((asset) => asset.kind === "image" || asset.path?.includes("/images/") || /\.(jpe?g|png|webp|gif)(?:\?|$)/i.test(asset.url));
+        const attachments = media.filter((asset) => !gallery.includes(asset));
 
         const dates = [item.startDate, item.endDate]
           .filter(Boolean)
@@ -73,7 +78,8 @@ export default function Projects({ onBack }) {
           contributors.length ||
           media.length ||
           item.imageUrl ||
-          technologies.length > 6
+          technologies.length > 6 ||
+          skills.length
         );
 
         return (
@@ -130,6 +136,13 @@ export default function Projects({ onBack }) {
                   />
                 )}
 
+                {skills.length > 0 && (
+                  <div>
+                    <strong>Associated skills</strong>
+                    <PortfolioTags items={skills} label="Associated skills" />
+                  </div>
+                )}
+
                 {contributors.length > 0 && (
                   <p>
                     <strong>Contributors: </strong>
@@ -143,16 +156,26 @@ export default function Projects({ onBack }) {
                   </p>
                 )}
 
-                {media.length > 0 && (
-                  <div className="portfolio-links">
-                    {media.map((asset, mediaIndex) => (
-                      <PortfolioLink
+                {gallery.length > 0 && (
+                  <div className="portfolio-gallery">
+                    {gallery.map((asset, mediaIndex) => (
+                      <a
+                        className="portfolio-gallery-item"
                         href={asset.url}
                         key={asset.id || mediaIndex}
+                        target="_blank"
+                        rel="noopener noreferrer"
                       >
-                        {asset.label || asset.name || "Project attachment"}
-                      </PortfolioLink>
+                        <img src={asset.url} alt={asset.label || `${item.title || "Project"} gallery image ${mediaIndex + 1}`} loading="lazy" />
+                        <span>{asset.label || asset.name || `Gallery image ${mediaIndex + 1}`}</span>
+                      </a>
                     ))}
+                  </div>
+                )}
+
+                {attachments.length > 0 && (
+                  <div className="portfolio-links">
+                    {attachments.map((asset, mediaIndex) => <PortfolioLink key={asset.id || mediaIndex} href={asset.url}>{asset.label || asset.name || "Project attachment"}</PortfolioLink>)}
                   </div>
                 )}
               </PortfolioMore>
