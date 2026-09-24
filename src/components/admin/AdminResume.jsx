@@ -34,7 +34,7 @@ export default function AdminResume() {
   };
 
   return (
-    <EditorPage sectionId="resume" number="06" title="Resume" description="Manage the overview, timeline and latest published PDF." editor={editor} onSave={save} PreviewComponent={Resume}>
+    <EditorPage sectionId="resume" number="07" title="Resume" description="Manage the overview, timeline and latest published PDF." editor={editor} onSave={save} PreviewComponent={Resume}>
       <EditorSection number="01" title="Resume information">
         <div className="admin-form-grid">
           <Field label="Eyebrow" value={data.eyebrow} onChange={(value) => update("eyebrow", value)} />

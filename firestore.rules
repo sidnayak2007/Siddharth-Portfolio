@@ -39,6 +39,7 @@ service cloud.firestore {
         || documentId == "projects"
         || documentId == "skills"
         || documentId == "education"
+        || documentId == "certifications"
         || documentId == "resume"
         || documentId == "contact";
 
@@ -196,6 +197,31 @@ service cloud.firestore {
 
 
       // =====================================================
+      // CERTIFICATIONS
+      // =====================================================
+
+      allow create, update:
+        if documentId == "certifications"
+        && isAdmin()
+        && validUpdatedAt()
+
+        && request.resource.data.keys().size() <= 40
+
+        && request.resource.data.eyebrow is string
+        && request.resource.data.eyebrow.size() <= 100
+
+        && request.resource.data.heading is string
+        && request.resource.data.heading.size() >= 1
+        && request.resource.data.heading.size() <= 300
+
+        && request.resource.data.intro is string
+        && request.resource.data.intro.size() <= 1500
+
+        && request.resource.data.items is list
+        && request.resource.data.items.size() <= 24;
+
+
+      // =====================================================
       // RESUME
       // =====================================================
 
@@ -279,21 +305,27 @@ service cloud.firestore {
           || documentId == "projects"
           || documentId == "skills"
           || documentId == "education"
+          || documentId == "certifications"
           || documentId == "resume"
           || documentId == "contact"
         );
     }
 
-    // Hidden contact entries are stored separately so public reads cannot
-    // retrieve unpublished email addresses or phone numbers.
+    // Hidden contact and certification entries stay outside public reads.
     match /portfolioPrivate/{documentId} {
-      allow read: if documentId == "contact" && isAdmin();
+      allow read: if (documentId == "contact" || documentId == "certifications") && isAdmin();
       allow create, update: if documentId == "contact"
         && isAdmin()
         && validUpdatedAt()
         && request.resource.data.keys().hasOnly(["links", "updatedAt"])
         && request.resource.data.links is list
         && request.resource.data.links.size() <= 12;
+      allow create, update: if documentId == "certifications"
+        && isAdmin()
+        && validUpdatedAt()
+        && request.resource.data.keys().hasOnly(["items", "updatedAt"])
+        && request.resource.data.items is list
+        && request.resource.data.items.size() <= 24;
       allow delete: if false;
     }
 

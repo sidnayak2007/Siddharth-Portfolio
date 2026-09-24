@@ -292,9 +292,16 @@ export const educationFallback = {
    RESUME
 ========================================================= */
 
+export const certificationsFallback = {
+  eyebrow: "CERTIFICATIONS / 06",
+  heading: "Certifications & credentials.",
+  intro: "Courses, credentials and certificates that document what I have learned.",
+  items: [],
+};
+
 export const resumeFallback = {
   eyebrow:
-    "RESUME / 06",
+    "RESUME / 07",
 
   title: "Resume",
   description: "A full overview of my education, experience and projects.",
@@ -376,7 +383,7 @@ export const resumeFallback = {
 
 export const contactFallback = {
   eyebrow:
-    "CONTACT / 08",
+    "CONTACT / 09",
 
   heading:
     "Let’s connect.",

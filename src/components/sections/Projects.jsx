@@ -1,6 +1,7 @@
 import { projectsFallback } from "../../data/portfolioDefaults";
 import { usePublicPortfolioDocument } from "../../hooks/usePublicPortfolioDocument";
 import { safeHref } from "../../utils/url";
+import PortfolioImage from "./PortfolioImage";
 import {
   PortfolioCard,
   PortfolioEmpty,
@@ -115,11 +116,11 @@ export default function Projects({ onBack, previewData }) {
             {hasMore && (
               <PortfolioMore label="View project details">
                 {item.imageUrl && (
-                  <img
-                    className="portfolio-detail-image"
+                  <PortfolioImage
+                    className="portfolio-detail-picture"
+                    imageClassName="portfolio-detail-image"
                     src={item.imageUrl}
                     alt={`${item.title || "Project"} preview`}
-                    loading="lazy"
                   />
                 )}
 
@@ -159,16 +160,13 @@ export default function Projects({ onBack, previewData }) {
                 {gallery.length > 0 && (
                   <div className="portfolio-gallery">
                     {gallery.map((asset, mediaIndex) => (
-                      <a
+                      <PortfolioImage
                         className="portfolio-gallery-item"
-                        href={asset.url}
+                        src={asset.url}
                         key={asset.id || mediaIndex}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                      >
-                        <img src={asset.url} alt={asset.label || `${item.title || "Project"} gallery image ${mediaIndex + 1}`} loading="lazy" />
-                        <span>{asset.label || asset.name || `Gallery image ${mediaIndex + 1}`}</span>
-                      </a>
+                        alt={asset.label || `${item.title || "Project"} gallery image ${mediaIndex + 1}`}
+                        caption={asset.label || asset.name || `Gallery image ${mediaIndex + 1}`}
+                      />
                     ))}
                   </div>
                 )}

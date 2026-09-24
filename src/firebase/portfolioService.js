@@ -2,7 +2,7 @@ import { doc, getDocFromServer, serverTimestamp, setDoc, writeBatch } from "fire
 import { adminAuth, adminDb, isAuthorizedAdmin } from "./firebase";
 
 const ALLOWED_SECTIONS = new Set([
-  "about", "experience", "projects", "skills", "education", "resume", "contact",
+  "about", "experience", "projects", "skills", "education", "certifications", "resume", "contact",
 ]);
 
 function assertSection(sectionId) {
@@ -47,6 +47,17 @@ export async function getPortfolioDocument(sectionId, fallback = {}) {
     );
   }
 
+  if (sectionId === "certifications") {
+    const privateSnapshot = await getDocFromServer(doc(adminDb, "portfolioPrivate", "certifications"));
+    const publicItems = Array.isArray(content.items) ? content.items : [];
+    const privateItems = privateSnapshot.exists() && Array.isArray(privateSnapshot.data().items)
+      ? privateSnapshot.data().items : [];
+    content.items = [...publicItems, ...privateItems].sort((a, b) =>
+      (Number.isInteger(a?.order) ? a.order : Number.MAX_SAFE_INTEGER)
+      - (Number.isInteger(b?.order) ? b.order : Number.MAX_SAFE_INTEGER)
+    );
+  }
+
   return { ...cloneValue(fallback), ...cloneValue(content) };
 }
 
@@ -74,6 +85,23 @@ export async function savePortfolioDocument(sectionId, value) {
     }, { merge: true });
     await batch.commit();
     return cleanValue;
+  }
+
+  if (sectionId === "certifications") {
+    const items = Array.isArray(cleanValue.items) ? cleanValue.items : [];
+    const orderedItems = items.map((item, order) => ({ ...item, order }));
+    const batch = writeBatch(adminDb);
+    batch.set(documentRef, {
+      ...cleanValue,
+      items: orderedItems.filter((item) => item.visible !== false),
+      updatedAt: serverTimestamp(),
+    }, { merge: true });
+    batch.set(doc(adminDb, "portfolioPrivate", "certifications"), {
+      items: orderedItems.filter((item) => item.visible === false),
+      updatedAt: serverTimestamp(),
+    }, { merge: true });
+    await batch.commit();
+    return { ...cleanValue, items: orderedItems };
   }
 
   // Merge keeps unedited fields from older portfolio documents intact.

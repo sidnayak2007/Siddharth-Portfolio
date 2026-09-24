@@ -22,8 +22,8 @@ export default function Contact({ onBack, previewData }) {
   return (
     <PortfolioSection
       section="contact"
-      number="08"
-      eyebrow={data.eyebrow === "CONTACT / 07" ? "CONTACT / 08" : data.eyebrow}
+      number="09"
+      eyebrow={["CONTACT / 07", "CONTACT / 08"].includes(data.eyebrow) ? "CONTACT / 09" : data.eyebrow}
       heading={data.heading}
       intro={data.intro}
       onBack={onBack}

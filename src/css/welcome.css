@@ -182,12 +182,25 @@
 
 .welcome-portrait-stage {
   position: relative;
+  isolation: isolate;
   width: min(100%, 445px);
   aspect-ratio: 1;
   margin: auto;
   display: grid;
   place-items: center;
   animation: welcome-portrait-in .9s .12s cubic-bezier(.2, .8, .2, 1) both;
+}
+
+.welcome-portrait-stage::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  inset: -12%;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(129,177,246,.22), rgba(171,151,238,.12) 48%, transparent 72%);
+  filter: blur(14px);
+  animation: welcome-halo 15s ease-in-out infinite alternate;
+  pointer-events: none;
 }
 
 .welcome-portrait-orbit {
@@ -352,6 +365,8 @@
   to { transform: translate(-13vw, 60vh) scale(1.22); }
 }
 
+@keyframes welcome-halo { to { transform: scale(1.08) translateY(-7px); opacity: .75; } }
+
 @keyframes welcome-copy-in {
   from { opacity: 0; transform: translateY(18px); }
   to { opacity: 1; transform: translateY(0); }
@@ -480,6 +495,7 @@
 
 @media (prefers-reduced-motion: reduce) {
   .welcome-ambient,
+  .welcome-portrait-stage::before,
   .welcome-copy,
   .welcome-portrait-stage,
   .welcome-page-leaving .welcome-exit-ring,
@@ -493,4 +509,21 @@
   .welcome-enter {
     transition: none;
   }
+}
+
+.welcome-eyebrow,
+.welcome-copy h1,
+.welcome-description,
+.welcome-enter { animation: welcome-copy-in .55s cubic-bezier(.2,.8,.2,1) both; }
+.welcome-eyebrow { animation-delay: .08s; }
+.welcome-copy h1 { animation-delay: .16s; }
+.welcome-description { animation-delay: .25s; }
+.welcome-enter { animation-delay: .34s; }
+.welcome-enter:active:not(:disabled) { transform: translateY(0) scale(.985); }
+@media (hover: none), (pointer: coarse) {
+  .welcome-ambient, .welcome-portrait-stage::before { animation: none; }
+  .welcome-enter { touch-action: manipulation; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .welcome-eyebrow, .welcome-copy h1, .welcome-description, .welcome-enter { animation: none; }
 }

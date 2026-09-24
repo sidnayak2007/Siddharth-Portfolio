@@ -20,6 +20,7 @@ import Experience from "./components/sections/experience";
 import Projects from "./components/sections/Projects";
 import Skills from "./components/sections/Skills";
 import Education from "./components/sections/Education";
+import Certifications from "./components/sections/Certifications";
 import Resume from "./components/sections/Resume";
 import Contact from "./components/sections/Contact";
 import Game from "./components/sections/Game";
@@ -260,6 +261,9 @@ function App() {
 
   education:
     Education,
+
+  certifications:
+    Certifications,
 
   resume:
     Resume,

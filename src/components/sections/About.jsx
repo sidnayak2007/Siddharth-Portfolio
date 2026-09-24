@@ -2,6 +2,7 @@ import profileImage from "../../assets/profile.png";
 import { aboutFallback } from "../../data/portfolioDefaults";
 import { usePublicPortfolioDocument } from "../../hooks/usePublicPortfolioDocument";
 import { safeHref } from "../../utils/url";
+import PortfolioImage from "./PortfolioImage";
 import {
   PortfolioLink,
   PortfolioMore,
@@ -34,8 +35,9 @@ export default function About({ onBack, previewData }) {
     >
       <article className="portfolio-card portfolio-about-card">
         <div className="portfolio-profile">
-          <img
-            className="portfolio-profile-photo"
+          <PortfolioImage
+            className="portfolio-profile-image"
+            imageClassName="portfolio-profile-photo"
             src={about.photoUrl || profileImage}
             alt={about.name ? `Portrait of ${about.name}` : "Profile portrait"}
           />

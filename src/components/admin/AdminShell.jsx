@@ -98,7 +98,7 @@ export default function AdminShell({ activeSection = "dashboard", dirty = false,
 
           <div className="admin-sidebar-footer">
             <span>FIREBASE CMS</span>
-            <strong>7 EDITORS</strong>
+            <strong>{ADMIN_SECTIONS.length} EDITORS</strong>
           </div>
         </aside>
 

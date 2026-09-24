@@ -1,6 +1,7 @@
 import { experienceFallback } from "../../data/portfolioDefaults";
 import { usePublicPortfolioDocument } from "../../hooks/usePublicPortfolioDocument";
 import { safeHref } from "../../utils/url";
+import PortfolioImage from "./PortfolioImage";
 import {
   PortfolioCard,
   PortfolioEmpty,
@@ -62,6 +63,8 @@ export default function Experience({ onBack, previewData }) {
         const media = Array.isArray(item.media)
           ? item.media.filter((asset) => asset && safeHref(asset.url))
           : [];
+        const images = media.filter((asset) => asset.kind === "image" || /\.(jpe?g|png|webp|gif)(?:\?|$)/i.test(asset.url));
+        const documents = media.filter((asset) => !images.includes(asset));
 
         const hasDetails = Boolean(
           highlights.length ||
@@ -83,6 +86,7 @@ export default function Experience({ onBack, previewData }) {
         return (
           <PortfolioCard
             key={item.id || `experience-${index}`}
+            className="portfolio-timeline-entry"
             title={item.role || "Position"}
             subtitle={item.organization}
             image={item.logoUrl}
@@ -117,7 +121,21 @@ export default function Experience({ onBack, previewData }) {
                   </ul></div>
                 )}
 
-                {(media.length > 0 || safeHref(item.certificateUrl)) && (
+                {images.length > 0 && (
+                  <div className="portfolio-gallery">
+                    {images.map((asset, mediaIndex) => (
+                      <PortfolioImage
+                        key={asset.id || mediaIndex}
+                        className="portfolio-gallery-item"
+                        src={asset.url}
+                        alt={asset.label || `${item.organization || "Experience"} image ${mediaIndex + 1}`}
+                        caption={asset.label || asset.name || `Supporting image ${mediaIndex + 1}`}
+                      />
+                    ))}
+                  </div>
+                )}
+
+                {(documents.length > 0 || safeHref(item.certificateUrl)) && (
                   <div className="portfolio-links">
                     {safeHref(item.certificateUrl) && (
                       <PortfolioLink href={item.certificateUrl}>
@@ -125,7 +143,7 @@ export default function Experience({ onBack, previewData }) {
                       </PortfolioLink>
                     )}
 
-                    {media.map((asset, mediaIndex) => (
+                    {documents.map((asset, mediaIndex) => (
                       <PortfolioLink
                         href={asset.url}
                         key={asset.id || mediaIndex}

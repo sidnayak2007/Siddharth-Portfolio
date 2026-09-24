@@ -1,5 +1,6 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import HomeBackground from "./HomeBackground";
+import { adminPath } from "../../utils/adminPath";
 import "../../css/home.css";
 
 const menuItems = [
@@ -67,9 +68,20 @@ const menuItems = [
   soft: "#eff6ff",
 },
   {
+    id: "certifications",
+    label: "Certifications",
+    number: "06",
+    title: "Certifications",
+    eyebrow: "Credentials",
+    description: "Courses, credentials and certificates that reflect what I have learned and put into practice.",
+    primary: "#4b82b6",
+    secondary: "#a9d5f3",
+    soft: "#edf7ff",
+  },
+  {
     id: "resume",
     label: "Resume",
-    number: "06",
+    number: "07",
     title: "Resume",
     eyebrow: "Overview",
     description:
@@ -82,7 +94,7 @@ const menuItems = [
   {
     id: "game",
     label: "Game",
-    number: "07",
+    number: "08",
     title: "Keep It Together",
     eyebrow: "Playground",
     description:
@@ -92,14 +104,28 @@ const menuItems = [
     soft: "#fff1f6",
   },
   {
-    id: "contact", label: "Contact", number: "08", title: "Contact",
+    id: "contact", label: "Contact", number: "09", title: "Contact",
     primary: "#4c8bca", secondary: "#9bc9ef", soft: "#edf7ff",
   },
 ];
 
 function Home({ onOpenSection }) {
   const [activeId, setActiveId] = useState("projects");
+  const [opening, setOpening] = useState(false);
+  const openTimer = useRef(null);
   const activeItem = menuItems.find((item) => item.id === activeId) || menuItems[0];
+
+  useEffect(() => () => window.clearTimeout(openTimer.current), []);
+
+  const handleExplore = () => {
+    if (opening) return;
+    if (window.matchMedia?.("(prefers-reduced-motion: reduce)").matches) {
+      onOpenSection?.(activeItem);
+      return;
+    }
+    setOpening(true);
+    openTimer.current = window.setTimeout(() => onOpenSection?.(activeItem), 180);
+  };
 
   const handleKeyDown = (event, index) => {
     if (!["ArrowRight", "ArrowLeft", "ArrowUp", "ArrowDown"].includes(event.key)) return;
@@ -111,11 +137,11 @@ function Home({ onOpenSection }) {
   };
 
   return (
-    <main className="ps-home" style={{ "--active-primary": activeItem.primary, "--active-secondary": activeItem.secondary, "--active-soft": activeItem.soft }}>
+    <main className={`ps-home${opening ? " ps-home-opening" : ""}`} style={{ "--active-primary": activeItem.primary, "--active-secondary": activeItem.secondary, "--active-soft": activeItem.soft }}>
       <HomeBackground primary={activeItem.primary} secondary={activeItem.secondary} soft={activeItem.soft} />
       <header className="ps-home-header">
         <span className="ps-home-welcome">Welcome to Portfolio</span>
-        <button type="button" className="ps-home-admin" onClick={() => { window.location.href = "/admin"; }} aria-label="Open admin">Admin</button>
+        <button type="button" className="ps-home-admin" onClick={() => { window.location.href = adminPath(); }} aria-label="Open admin">Admin</button>
       </header>
       <section className="ps-home-content" aria-label="Siddharth Nayak portfolio">
         <div className="ps-wheel" aria-label="Portfolio sections">
@@ -127,9 +153,9 @@ function Home({ onOpenSection }) {
           </div>
           {menuItems.map((item, index) => (
             <button id={`portfolio-card-${item.id}`} key={item.id} type="button"
-              className={`ps-menu-card ${activeId === item.id ? "ps-menu-card-active" : ""}`}
-              style={{ "--angle": `${index * 45 - 90}deg`, "--counter-angle": `${90 - index * 45}deg`, "--card-primary": item.primary, "--card-secondary": item.secondary }}
-              onClick={() => setActiveId(item.id)}
+              className={`ps-menu-card ps-menu-card-${item.id} ${activeId === item.id ? "ps-menu-card-active" : ""}`}
+              style={{ "--angle": `${index * (360 / menuItems.length) - 90}deg`, "--counter-angle": `${90 - index * (360 / menuItems.length)}deg`, "--card-primary": item.primary, "--card-secondary": item.secondary }}
+              onClick={() => { if (!opening) setActiveId(item.id); }}
               onKeyDown={(event) => handleKeyDown(event, index)}
               aria-label={`Select ${item.label}`} aria-pressed={activeId === item.id}>
 <div className="ps-card-art">
@@ -244,6 +270,14 @@ EDUCATION
     </div>
   </div>
 )}
+                    {item.id === "certifications" && (
+                      <svg className="symbol symbol-certifications" viewBox="0 0 96 96" fill="none" aria-hidden="true">
+                        <rect x="18" y="15" width="60" height="62" rx="10" fill="#dceffc" stroke="#5b91bf" strokeWidth="3" />
+                        <path d="M31 29h34M31 38h25" stroke="#7daacb" strokeWidth="4" strokeLinecap="round" />
+                        <circle cx="49" cy="56" r="11" fill="#8cc3e6" stroke="#4b82b6" strokeWidth="3" />
+                        <path d="m43 65-4 16 10-6 10 6-4-16" fill="#65a5d4" stroke="#4b82b6" strokeWidth="2" strokeLinejoin="round" />
+                      </svg>
+                    )}
                     {/*
                     RESUME
                     */}
@@ -299,7 +333,7 @@ EDUCATION
             </button>
           ))}
         </div>
-        <button className="ps-open-button" type="button" onClick={() => onOpenSection?.(activeItem)}>
+        <button className="ps-open-button" type="button" onClick={handleExplore} disabled={opening} aria-busy={opening}>
           Explore {activeItem.label}
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14m-5-5 5 5-5 5" /></svg>
         </button>

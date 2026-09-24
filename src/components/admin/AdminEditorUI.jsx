@@ -209,6 +209,7 @@ export function MediaUploadField({ kind = "image", value, onChange, label, fallb
           {kind === "image" ? <img src={url || fallbackUrl} alt={label || "Current image"} /> : <div className="admin-pdf-preview"><a href={url} target="_blank" rel="noopener noreferrer">{value?.name || "Open current PDF"}</a><iframe src={url} title={`${label || "Document"} PDF preview`} /></div>}
           <div>
             <label htmlFor={inputId} className="admin-secondary-button">{uploading ? "Uploading…" : "Replace file"}</label>
+            {kind === "image" && url && <a className="admin-secondary-button" href={url} target="_blank" rel="noopener noreferrer">See full picture</a>}
             {url && <button type="button" className="admin-danger-text" onClick={remove} disabled={uploading}>Remove</button>}
           </div>
         </div>

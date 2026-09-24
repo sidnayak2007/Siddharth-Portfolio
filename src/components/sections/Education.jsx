@@ -1,6 +1,7 @@
 import { educationFallback } from "../../data/portfolioDefaults";
 import { usePublicPortfolioDocument } from "../../hooks/usePublicPortfolioDocument";
 import { safeHref } from "../../utils/url";
+import PortfolioImage from "./PortfolioImage";
 import {
   PortfolioCard,
   PortfolioEmpty,
@@ -102,6 +103,7 @@ export default function Education({ onBack, previewData }) {
         return (
           <PortfolioCard
             key={item.id || `education-${index}`}
+            className="portfolio-timeline-entry"
             title={item.institution || "Institution"}
             subtitle={[
               item.qualification,
@@ -179,11 +181,11 @@ export default function Education({ onBack, previewData }) {
                 )}
 
                 {item.imageUrl && (
-                  <img
-                    className="portfolio-detail-image"
+                  <PortfolioImage
+                    className="portfolio-detail-picture"
+                    imageClassName="portfolio-detail-image"
                     src={item.imageUrl}
                     alt={`${item.institution || "Institution"} media`}
-                    loading="lazy"
                   />
                 )}
 

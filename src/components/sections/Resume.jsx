@@ -23,8 +23,8 @@ export default function Resume({ onBack, previewData }) {
   return (
     <PortfolioSection
       section="resume"
-      number="06"
-      eyebrow={data.eyebrow}
+      number="07"
+      eyebrow={data.eyebrow === "RESUME / 06" ? "RESUME / 07" : data.eyebrow}
       heading={data.heading}
       intro={data.intro}
       onBack={onBack}

@@ -3,6 +3,7 @@ import { doc, getDocFromServer } from "firebase/firestore";
 import { adminAuth, adminDb, isAuthorizedAdmin } from "../../firebase/firebase";
 import AdminAbout from "./AdminAbout";
 import AdminContact from "./AdminContact";
+import AdminCertifications from "./AdminCertifications";
 import AdminEducation from "./AdminEducation";
 import AdminExperience from "./AdminExperience";
 import AdminProjects from "./AdminProjects";
@@ -20,6 +21,7 @@ const EDITORS = {
   projects: AdminProjects,
   skills: AdminSkills,
   education: AdminEducation,
+  certifications: AdminCertifications,
   resume: AdminResume,
   contact: AdminContact,
 };
@@ -41,7 +43,7 @@ function AdminDashboard() {
         <div>
           <span className="admin-eyebrow">OVERVIEW</span>
           <h1>Welcome back</h1>
-          <p>Manage the seven sections of your portfolio, preview changes, then publish when ready.</p>
+          <p>Manage your portfolio sections, preview changes, then publish when ready.</p>
         </div>
         <div className={`admin-online ${connection}`}>
           <span aria-hidden="true" />

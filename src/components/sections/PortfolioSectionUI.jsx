@@ -1,5 +1,6 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { safeHref } from "../../utils/url";
+import PortfolioImage from "./PortfolioImage";
 import "../../css/portfolio-sections.css";
 
 export function PortfolioLink({
@@ -39,8 +40,23 @@ export function PortfolioSection({
   onRetry,
   children,
 }) {
+  const [leaving, setLeaving] = useState(false);
+  const leaveTimer = useRef(null);
+
+  useEffect(() => () => window.clearTimeout(leaveTimer.current), []);
+
+  const handleBack = () => {
+    if (leaving || !onBack) return;
+    if (window.matchMedia?.("(prefers-reduced-motion: reduce)").matches) {
+      onBack();
+      return;
+    }
+    setLeaving(true);
+    leaveTimer.current = window.setTimeout(onBack, 170);
+  };
+
   return (
-    <main className={`portfolio-section portfolio-section-${section}`}>
+    <main className={`portfolio-section portfolio-section-${section}${leaving ? " portfolio-section-leaving" : ""}`}>
       <div className="portfolio-section-light" aria-hidden="true" />
 
       <div className="portfolio-section-shell">
@@ -48,7 +64,7 @@ export function PortfolioSection({
           <button
             type="button"
             className="portfolio-back"
-            onClick={() => onBack?.()}
+            onClick={handleBack}
           >
             <span aria-hidden="true">←</span>
             Back to home
@@ -86,6 +102,11 @@ export function PortfolioSection({
           <div className="portfolio-section-content">{children}</div>
         )}
       </div>
+      {onBack && (
+        <button type="button" className="portfolio-floating-back" onClick={handleBack} aria-label="Back to portfolio home">
+          <span aria-hidden="true">←</span><span>Home</span>
+        </button>
+      )}
     </main>
   );
 }
@@ -107,11 +128,7 @@ export function PortfolioCard({
       <div className="portfolio-card-header">
         <div className="portfolio-card-image">
           {image ? (
-            <img
-              src={image}
-              alt={imageAlt || title || ""}
-              loading="lazy"
-            />
+            <PortfolioImage src={image} alt={imageAlt || title || "Portfolio image"} compact />
           ) : (
             <span aria-hidden="true">{initial}</span>
           )}
