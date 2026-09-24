@@ -25,8 +25,6 @@ export default function AdminExperience() {
     }));
   };
   const remove = (index) => {
-    const item = items[index];
-    [item.logoPath, item.certificatePath, ...(item.media || []).map((asset) => asset.path)].filter(Boolean).forEach(editor.queueDelete);
     update("items", items.filter((_, itemIndex) => itemIndex !== index));
   };
 
@@ -92,9 +90,9 @@ export default function AdminExperience() {
               <div className="admin-subeditor"><h3>Achievements</h3><StringList values={item.achievements || []} onChange={(value) => updateItem(index, "achievements", value)} addLabel="Add achievement" placeholder="Outcome or result" /></div>
               <div className="admin-subeditor"><h3>Other highlights</h3><StringList values={item.highlights || []} onChange={(value) => updateItem(index, "highlights", value)} addLabel="Add highlight" placeholder="Additional detail" /></div>
               <div className="admin-subeditor"><h3>Associated skills</h3><StringList values={item.skills || []} onChange={(value) => updateItem(index, "skills", value)} addLabel="Add skill" placeholder="Skill or tool" /></div>
-              <MediaUploadField sectionId="experience" itemId={`${item.id || index}-logo`} label="Organisation logo" value={{ url: item.logoUrl, path: item.logoPath }} queueDelete={editor.queueDelete} registerUpload={editor.registerUpload} onChange={(asset) => editor.setValue((current) => ({ ...current, items: (current.items || []).map((entry, itemIndex) => (item.id ? entry.id === item.id : itemIndex === index) ? { ...entry, logoUrl: asset.url, logoPath: asset.path } : entry) }))} />
-              <MediaUploadField sectionId="experience" itemId={`${item.id || index}-certificate`} kind="pdf" label="Certificate" value={{ url: item.certificateUrl, path: item.certificatePath, name: item.certificateName }} queueDelete={editor.queueDelete} registerUpload={editor.registerUpload} onChange={(asset) => editor.setValue((current) => ({ ...current, items: (current.items || []).map((entry, itemIndex) => (item.id ? entry.id === item.id : itemIndex === index) ? { ...entry, certificateUrl: asset.url, certificatePath: asset.path, certificateName: asset.name } : entry) }))} />
-              <MediaListEditor sectionId="experience" itemId={item.id || String(index)} assets={item.media} onChange={(value) => updateItem(index, "media", value)} queueDelete={editor.queueDelete} registerUpload={editor.registerUpload} label="Supporting images" />
+              <MediaUploadField sectionId="experience" itemId={`${item.id || index}-logo`} label="Organisation logo" value={{ url: item.logoUrl, path: item.logoPath }} onChange={(asset) => editor.setValue((current) => ({ ...current, items: (current.items || []).map((entry, itemIndex) => (item.id ? entry.id === item.id : itemIndex === index) ? { ...entry, logoUrl: asset.url, logoPath: asset.path } : entry) }))} />
+              <MediaUploadField sectionId="experience" itemId={`${item.id || index}-certificate`} kind="pdf" label="Certificate" value={{ url: item.certificateUrl, path: item.certificatePath, name: item.certificateName }} onChange={(asset) => editor.setValue((current) => ({ ...current, items: (current.items || []).map((entry, itemIndex) => (item.id ? entry.id === item.id : itemIndex === index) ? { ...entry, certificateUrl: asset.url, certificatePath: asset.path, certificateName: asset.name } : entry) }))} />
+              <MediaListEditor sectionId="experience" itemId={item.id || String(index)} assets={item.media} onChange={(value) => updateItem(index, "media", value)} label="Supporting images" />
             </EntryCard>
           ))}
         </div>

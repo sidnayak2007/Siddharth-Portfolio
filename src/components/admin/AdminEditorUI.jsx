@@ -227,7 +227,7 @@ export function MediaUploadField({ kind = "image", value, onChange, label, fallb
   );
 }
 
-export function MediaListEditor({ sectionId, itemId, assets = [], onChange, queueDelete, registerUpload, kind = "image", label = "Supporting media", max = 8 }) {
+export function MediaListEditor({ itemId, assets = [], onChange, kind = "image", label = "Supporting media", max = 8 }) {
   const list = Array.isArray(assets) ? assets : [];
   const matches = (item, target, itemIndex, index) => target.id
     ? item.id === target.id
@@ -251,7 +251,7 @@ export function MediaListEditor({ sectionId, itemId, assets = [], onChange, queu
       {list.map((asset, index) => (
         <div className="admin-media-list-item" key={asset.id || index}>
           <Field label="Attachment label" value={asset.label} onChange={(text) => update(index, { label: text })} full />
-          <MediaUploadField sectionId={sectionId} itemId={`${itemId}-${asset.id || index}`} kind={kind} value={asset} onChange={(next) => update(index, next)} queueDelete={queueDelete} registerUpload={registerUpload} label={`${label} ${index + 1}`} />
+          <MediaUploadField kind={kind} value={asset} onChange={(next) => update(index, next)} label={`${label} ${index + 1}`} />
           <button type="button" className="admin-danger-text" onClick={() => remove(index)}>Remove attachment</button>
         </div>
       ))}

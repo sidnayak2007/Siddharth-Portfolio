@@ -76,9 +76,5 @@ export function useAdminPortfolioDocument(sectionId, fallback) {
     return () => window.removeEventListener("beforeunload", warn);
   }, [dirty]);
 
-  // Firestore stores media URLs; there are no Firebase Storage objects to remove.
-  const queueDelete = useCallback(() => {}, []);
-  const registerUpload = useCallback(() => {}, []);
-
-  return { value, setValue, loading, loadError, status, message, dirty, save, retry, queueDelete, registerUpload };
+  return { value, setValue, loading, loadError, status, message, dirty, save, retry };
 }

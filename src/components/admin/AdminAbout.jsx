@@ -41,7 +41,7 @@ export default function AdminAbout() {
   return (
     <EditorPage sectionId="about" number="01" title="About" description="Edit your public profile and the details behind it." editor={editor} onSave={save} PreviewComponent={About}>
       <EditorSection number="01" title="Profile" description="Your name, photo and headline appear first.">
-        <MediaUploadField sectionId="about" itemId="profile" label="Profile picture" fallbackUrl={profileImage} value={{ url: about.photoUrl, path: about.photoPath, name: about.photoName }} queueDelete={editor.queueDelete} registerUpload={editor.registerUpload} onChange={(asset) => editor.setValue((current) => ({ ...current, photoUrl: asset.url, photoPath: asset.path, photoName: asset.name }))} />
+        <MediaUploadField sectionId="about" itemId="profile" label="Profile picture" fallbackUrl={profileImage} value={{ url: about.photoUrl, path: about.photoPath, name: about.photoName }} onChange={(asset) => editor.setValue((current) => ({ ...current, photoUrl: asset.url, photoPath: asset.path, photoName: asset.name }))} />
         <div className="admin-form-grid">
           <Field label="Full name" value={about.name} onChange={(value) => update("name", value)} required maxLength={120} />
           <Field label="Location" value={about.location} onChange={(value) => update("location", value)} placeholder="City, country" />

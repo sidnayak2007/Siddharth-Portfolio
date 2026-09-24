@@ -28,8 +28,6 @@ export default function AdminProjects() {
     }));
   };
   const remove = (index) => {
-    const item = items[index];
-    [item.imagePath, ...(item.media || []).map((asset) => asset.path)].filter(Boolean).forEach(editor.queueDelete);
     update("items", items.filter((_, itemIndex) => itemIndex !== index));
   };
   const save = () => {
@@ -94,8 +92,8 @@ export default function AdminProjects() {
               <div className="admin-subeditor"><h3>Technologies</h3><StringList values={item.technologies || []} onChange={(value) => updateItem(index, "technologies", value)} addLabel="Add technology" placeholder="React, Firebase…" max={16} /></div>
               <div className="admin-subeditor"><h3>Associated skills</h3><StringList values={item.skills || []} onChange={(value) => updateItem(index, "skills", value)} addLabel="Add skill" placeholder="Product design, research…" max={16} /></div>
               <div className="admin-subeditor"><h3>Contributors</h3><StringList values={item.contributors || []} onChange={(value) => updateItem(index, "contributors", value)} addLabel="Add contributor" placeholder="Name or team" max={16} /></div>
-              <MediaUploadField sectionId="projects" itemId={`${item.id || index}-thumbnail`} label="Project thumbnail" value={{ url: item.imageUrl, path: item.imagePath }} queueDelete={editor.queueDelete} registerUpload={editor.registerUpload} onChange={(asset) => editor.setValue((current) => ({ ...current, items: (current.items || []).map((entry, itemIndex) => (item.id ? entry.id === item.id : itemIndex === index) ? { ...entry, imageUrl: asset.url, imagePath: asset.path } : entry) }))} />
-              <MediaListEditor sectionId="projects" itemId={item.id || String(index)} assets={item.media} onChange={(value) => updateItem(index, "media", value)} queueDelete={editor.queueDelete} registerUpload={editor.registerUpload} label="Gallery images" />
+              <MediaUploadField sectionId="projects" itemId={`${item.id || index}-thumbnail`} label="Project thumbnail" value={{ url: item.imageUrl, path: item.imagePath }} onChange={(asset) => editor.setValue((current) => ({ ...current, items: (current.items || []).map((entry, itemIndex) => (item.id ? entry.id === item.id : itemIndex === index) ? { ...entry, imageUrl: asset.url, imagePath: asset.path } : entry) }))} />
+              <MediaListEditor sectionId="projects" itemId={item.id || String(index)} assets={item.media} onChange={(value) => updateItem(index, "media", value)} label="Gallery images" />
             </EntryCard>
           ))}
         </div>

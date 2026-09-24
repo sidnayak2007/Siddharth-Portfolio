@@ -46,7 +46,7 @@ export default function AdminResume() {
         </div>
       </EditorSection>
       <EditorSection number="02" title="Published PDF" description="The existing public PDF stays live until you save a replacement.">
-        <MediaUploadField sectionId="resume" itemId="resume" kind="pdf" label="Resume PDF" value={{ url: data.pdfUrl, path: data.pdfPath, name: data.pdfName }} queueDelete={editor.queueDelete} registerUpload={editor.registerUpload} onChange={(asset) => editor.setValue((current) => ({ ...current, pdfUrl: asset.url, pdfPath: asset.path, pdfName: asset.name }))} />
+        <MediaUploadField sectionId="resume" itemId="resume" kind="pdf" label="Resume PDF" value={{ url: data.pdfUrl, path: data.pdfPath, name: data.pdfName }} onChange={(asset) => editor.setValue((current) => ({ ...current, pdfUrl: asset.url, pdfPath: asset.path, pdfName: asset.name }))} />
       </EditorSection>
       <EditorSection number="03" title="Timeline" meta={`${timeline.length} / 20`}>
         <div className="admin-card-list">

@@ -1,120 +1,45 @@
-# Siddharth Nayak — Interactive Portfolio
+# Siddharth Nayak Portfolio
 
-A personal portfolio website designed as an interactive digital experience rather than a traditional portfolio.
+A React and Vite portfolio with a white, console-inspired interface, circular navigation, and the **KEEP IT TOGETHER** game. The game uses Firebase Authentication and Firestore for player records and its leaderboard. A private, LinkedIn-style Admin CMS manages the public portfolio content.
 
-The website takes inspiration from modern console interfaces, especially the way users browse and select content, while maintaining its own visual identity and design language.
+## Run locally
 
-## Live Website
+```bash
+npm ci
+npm run dev
+```
 
-Coming soon:
+Open the URL printed by Vite. The Admin dashboard is at `/Siddharth-Portfolio/admin` on the same origin. Sign in with the authorized Firebase Admin account.
 
-https://siddharthnayakportfolio.com
+## Content and media
 
-## About the Project
+- The seven Admin editors manage About, Experience, Projects, Skills, Education, Resume, and Contact. Each editor loads content from Cloud Firestore, supports a live preview, and publishes changes when **Save changes** is clicked.
+- Images and PDFs selected in Admin upload directly to Cloudinary with cloud name `zsvjuaee` and unsigned preset `siddharth_portfolio`. The returned HTTPS media URL is saved to Firestore only after **Save changes** is clicked. Images are limited to 8 MB and PDFs to 15 MB in the browser.
+- The PDF fields also accept a public HTTPS PDF link when a document is hosted elsewhere.
+- Removing or replacing media in the CMS updates the portfolio reference when saved. It does not delete the underlying Cloudinary asset; asset cleanup is done in Cloudinary's Media Library.
+- Firebase Storage is not used. The Firestore rules in `firestore.rules` protect Admin writes and game data.
 
-This portfolio is being built for recruiters, hiring managers, and anyone interested in exploring my work.
+Cloudinary's unsigned preset is a public client-side identifier. Keep its allowed formats, size limits, and other upload safeguards configured in the Cloudinary Console. No API secret belongs in browser code.
 
-Instead of using a traditional scrolling portfolio layout, the website uses an interactive navigation system where visitors can explore different parts of my professional profile.
+## Main files
 
-The main experience includes:
+| File | Purpose |
+| --- | --- |
+| `src/App.jsx` | Public navigation and protected Admin route |
+| `src/components/home/` | Welcome screen and circular navigation |
+| `src/components/sections/` | Public portfolio sections and game |
+| `src/components/admin/` | Admin dashboard and section editors |
+| `src/components/admin/AdminEditorUI.jsx` | Shared media upload and editor controls |
+| `src/cloudinary/portfolioUpload.js` | Cloudinary validation and unsigned upload |
+| `src/firebase/firebase.js` | Separate Firebase app instances for Admin and anonymous game players |
+| `src/firebase/portfolioService.js` | Admin Firestore reads and writes |
+| `src/firebase/playerService.js` | Game leaderboard data |
 
-- Interactive welcome screen
-- Console-inspired portfolio navigation
-- About Me
-- Projects
-- Skills
-- Resume
-- Contact
-- Interactive portfolio game
-- Game leaderboard
+## Checks and deployment
 
-## Admin System
+```bash
+npm run lint
+npm run build
+```
 
-The portfolio will also include a private admin dashboard operated by me.
-
-The admin system will allow me to update my portfolio without changing the website code manually.
-
-Planned admin features include:
-
-- Edit profile information
-- Update About Me
-- Add, edit, and remove projects
-- Manage skills
-- Manage education
-- Manage experience
-- Upload/update resume
-- Manage contact and social links
-- View and manage the game leaderboard
-
-Changes made through the admin dashboard will be reflected on the public portfolio.
-
-## Tech Stack
-
-### Frontend
-
-- React
-- Vite
-- JavaScript / JSX
-- Tailwind CSS
-
-### Development
-
-- VS Code
-- Git
-- GitHub
-- AI-assisted development
-
-### Deployment
-
-- Vercel
-- Custom domain
-
-### Planned Backend
-
-- Authentication
-- Database
-- File storage
-- API/services for portfolio content
-- Game leaderboard storage
-
-The exact backend services will be finalized during development.
-
-## Project Structure
-
-```text
-Siddharth-Portfolio/
-│
-├── public/
-│
-├── src/
-│   │
-│   ├── assets/
-│   │
-│   ├── components/
-│   │   ├── admin/
-│   │   ├── common/
-│   │   ├── home/
-│   │   └── sections/
-│   │
-│   ├── pages/
-│   │   ├── public/
-│   │   └── admin/
-│   │
-│   ├── data/
-│   ├── hooks/
-│   ├── lib/
-│   ├── services/
-│   ├── context/
-│   ├── utils/
-│   │
-│   ├── App.jsx
-│   ├── index.css
-│   └── main.jsx
-│
-├── .gitignore
-├── eslint.config.js
-├── index.html
-├── package.json
-├── package-lock.json
-├── README.md
-└── vite.config.js
+The GitHub Actions workflow in `.github/workflows/deploy.yml` builds and publishes the static site to GitHub Pages when `main` is pushed. Vite's base path is `/Siddharth-Portfolio/`.
