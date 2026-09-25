@@ -17,7 +17,7 @@ const emptyCertification = () => ({
   imageUrl: "",
   imagePath: "",
   imageName: "",
-  visible: false,
+  visible: true,
 });
 
 const cleanList = (items) => (Array.isArray(items) ? items : [])
@@ -92,7 +92,7 @@ export default function AdminCertifications() {
         </div>
       </EditorSection>
 
-      <EditorSection number="02" title="Credentials" description="New entries stay hidden until you choose to publish them." meta={`${items.length} / 24`}>
+      <EditorSection number="02" title="Credentials" description="New entries publish when you save. Turn off public visibility to keep an entry as a draft." meta={`${items.length} / 24`}>
         <div className="admin-card-list">
           {items.map((item, index) => (
             <EntryCard
@@ -117,7 +117,7 @@ export default function AdminCertifications() {
                 <CheckboxField label="Show on public portfolio" checked={item.visible} onChange={(value) => updateItem(index, "visible", value)} description="Hidden entries remain editable in Admin." />
               </div>
               <div className="admin-subeditor"><h3>Skills covered</h3><StringList values={item.skills || []} onChange={(value) => updateItem(index, "skills", value)} addLabel="Add skill" placeholder="Skill or topic" max={12} /></div>
-              <MediaUploadField kind="image" label="Certificate picture" value={{ url: item.imageUrl, path: item.imagePath, name: item.imageName }} onChange={(asset) => editor.setValue((current) => ({ ...current, items: (current.items || []).map((entry, itemIndex) => (item.id ? entry.id === item.id : itemIndex === index) ? { ...entry, imageUrl: asset.url, imagePath: asset.path, imageName: asset.name } : entry) }))} />
+              <MediaUploadField kind="image" label="Certificate picture" value={{ url: item.imageUrl, path: item.imagePath, name: item.imageName }} onChange={(asset) => editor.setValue((current) => ({ ...current, items: (current.items || []).map((entry, itemIndex) => (item.id ? entry.id === item.id : itemIndex === index) ? { ...entry, imageUrl: asset.url, imagePath: asset.path, imageName: asset.name, visible: true } : entry) }))} />
             </EntryCard>
           ))}
         </div>
