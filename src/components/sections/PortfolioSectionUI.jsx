@@ -130,6 +130,7 @@ export function PortfolioCard({
   subtitle,
   meta,
   badge,
+  headerVisual,
   children,
   className = "",
 }) {
@@ -139,7 +140,9 @@ export function PortfolioCard({
     <article className={`portfolio-card ${className}`.trim()}>
       <div className="portfolio-card-header">
         <div className="portfolio-card-image">
-          {image ? (
+          {headerVisual ? (
+            headerVisual
+          ) : image ? (
             <PortfolioImage src={image} alt={imageAlt || title || "Portfolio image"} compact />
           ) : (
             <span aria-hidden="true">{initial}</span>

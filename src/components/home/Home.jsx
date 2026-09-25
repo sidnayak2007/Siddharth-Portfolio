@@ -79,19 +79,6 @@ const menuItems = [
     soft: "#edf7ff",
   },
   {
-    id: "resume",
-    label: "Resume",
-    number: "07",
-    title: "Resume",
-    eyebrow: "Overview",
-    description:
-      "A concise overview of my education, experience, projects, achievements, skills and interests.",
-    primary: "#c78b42",
-    secondary: "#f1c98c",
-    soft: "#fff7ea",
-  },
-
-  {
     id: "game",
     label: "Game",
     number: "08",
@@ -116,7 +103,6 @@ const centerSummaries = {
   skills: "Tools and ways of working.",
   education: "Qualifications and learning.",
   certifications: "Courses and credentials.",
-  resume: "Experience at a glance.",
   game: "Play Keep It Together.",
   contact: "Let's connect.",
 };
@@ -294,25 +280,6 @@ EDUCATION
                       </svg>
                     )}
                     {/*
-                    RESUME
-                    */}
-
-                    {item.id ===
-                      "resume" && (
-                      <div
-                        className="symbol symbol-resume"
-                        aria-hidden="true"
-                      >
-                        <div className="resume-photo" />
-
-                        <span />
-                        <span />
-                        <span />
-                        <span />
-                      </div>
-                    )}
-
-                    {/*
                     GAME
                     */}
 
@@ -353,7 +320,7 @@ EDUCATION
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14m-5-5 5 5-5 5" /></svg>
         </button>
         <nav className="ps-home-shortcuts" aria-label="Quick access">
-          {menuItems.filter((item) => item.id === "resume" || item.id === "contact").map((item) => (
+          {[{ id: "resume", label: "Resume" }].map((item) => (
             <button key={item.id} type="button" disabled={opening} onClick={() => onOpenSection?.(item)}>
               {item.label} <span aria-hidden="true">↗</span>
             </button>
