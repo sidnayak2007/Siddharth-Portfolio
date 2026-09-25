@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState } from "react";
 import HomeBackground from "./HomeBackground";
-import { adminPath } from "../../utils/adminPath";
 import "../../css/home.css";
 
 const menuItems = [
@@ -140,7 +139,6 @@ function Home({ onOpenSection }) {
       <HomeBackground primary={activeItem.primary} secondary={activeItem.secondary} soft={activeItem.soft} />
       <header className="ps-home-header">
         <span className="ps-home-welcome">Welcome to Portfolio</span>
-        <button type="button" className="ps-home-admin" onClick={() => { window.location.href = adminPath(); }} aria-label="Open admin">Admin</button>
       </header>
       <section className="ps-home-content" aria-label="Siddharth Nayak portfolio">
         <div className="ps-wheel" aria-label="Portfolio sections">

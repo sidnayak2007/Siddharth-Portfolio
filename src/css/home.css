@@ -1285,7 +1285,6 @@
 }
 .ps-home-header { position: relative; z-index: 2; display: flex; align-items: center; justify-content: space-between; width: 100%; padding: clamp(17px,3vh,30px) clamp(20px,4vw,60px); }
 .ps-home-welcome { color:#436484; font-weight:700; letter-spacing:.13em; text-transform:uppercase; font-size:clamp(10px,1.1vw,13px); }
-.ps-home-admin { appearance:none; min-height:44px; padding:7px 12px; border:1px solid rgba(65,105,150,.18); border-radius:12px; background:rgba(255,255,255,.6); font-size:11px; color:#617690; cursor:pointer; }
 .ps-home-content { position:relative; z-index:1; flex:1; width:100%; min-height:0; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:clamp(5px,1.5vh,16px); padding:0 10px 16px; }
 .ps-wheel { position:relative; flex:none; width:var(--wheel-size); height:var(--wheel-size); max-width:100%; }
 .ps-wheel-ring { position:absolute; inset:15%; border:1px solid rgba(82,130,196,.17); border-radius:50%; box-shadow:0 0 65px rgba(111,153,221,.08),inset 0 0 38px rgba(157,195,239,.07); }
@@ -1295,7 +1294,7 @@
 .ps-wheel-center strong { font-size:clamp(9px,1.25vw,13px); color:#273d5c; white-space:nowrap; }
 .ps-center-selected { color:var(--active-primary); font-size:clamp(9px,1.1vw,12px); font-weight:700; }
 .ps-menu-card { appearance:none; position:absolute; z-index:2; left:50%; top:50%; width:var(--card-size); padding:0; border:0; background:transparent; color:inherit; text-align:center; cursor:pointer; transform:translate(-50%,-50%) rotate(var(--angle)) translateY(calc((var(--wheel-size) - var(--card-size)) * -.5)) rotate(var(--counter-angle)); -webkit-tap-highlight-color:transparent; }
-.ps-menu-card:focus-visible, .ps-open-button:focus-visible, .ps-home-admin:focus-visible { outline:3px solid #638de6; outline-offset:4px; }
+.ps-menu-card:focus-visible, .ps-open-button:focus-visible { outline:3px solid #638de6; outline-offset:4px; }
 .ps-card-art { width:100%; aspect-ratio:1; border-radius:clamp(13px,2vw,19px); background:linear-gradient(145deg,rgba(255,255,255,.74),rgba(232,241,251,.57)); border:1px solid rgba(71,115,172,.18); box-shadow:0 11px 29px rgba(42,82,132,.10),inset 0 1px 1px #fff; backdrop-filter:blur(15px); -webkit-backdrop-filter:blur(15px); }
 .ps-menu-card-active .ps-card-art { transform:translateY(-2px) scale(1.018); box-shadow:0 15px 34px color-mix(in srgb,var(--card-primary) 17%,transparent),0 0 22px color-mix(in srgb,var(--card-primary) 10%,transparent),inset 0 1px 1px #fff; border-color:color-mix(in srgb,var(--card-primary) 33%,transparent); }
 .ps-menu-card:hover .ps-card-art { transform:translateY(-3px) scale(1.018); }
@@ -1384,7 +1383,6 @@
 .ps-home-shortcuts button { min-height: 38px; padding: 7px 14px; border: 1px solid rgba(82, 125, 181, .16); border-radius: 999px; background: rgba(255, 255, 255, .64); color: #526d8f; font: 650 11px Inter, ui-sans-serif, system-ui, sans-serif; cursor: pointer; transition: background-color .2s ease, transform .2s ease; }
 .ps-home-shortcuts button:hover { background: #fff; transform: translateY(-2px); }
 .ps-home-shortcuts button:focus-visible { outline: 3px solid #638de6; outline-offset: 3px; }
-.ps-home-admin { color: #78899e; background: rgba(255, 255, 255, .38); border-color: rgba(65, 105, 150, .11); }
 @media (max-width: 650px) {
   .ps-home { --wheel-size: min(94vw, calc(100dvh - 210px)); }
   .ps-center-identity, .ps-center-description { display: none; }
@@ -1531,6 +1529,21 @@
   border-radius: 50%;
   background: #6e6de8;
 }
+
+/* A couple of slow, compositor-friendly accents keep the page feeling alive. */
+.ps-center-mark { animation: ps-mark-float 7s ease-in-out infinite; }
+.ps-home-welcome::after {
+  transform-origin: left center;
+  animation: ps-welcome-glint 8s ease-in-out infinite;
+}
+@keyframes ps-mark-float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-3px); }
+}
+@keyframes ps-welcome-glint {
+  0%, 100% { opacity: .72; transform: scaleX(.92); }
+  50% { opacity: 1; transform: scaleX(1); }
+}
 @media (max-width: 650px), (hover: none), (pointer: coarse) {
   .ps-fast-glow-two { animation: none; will-change: auto; }
   .ps-decorative-curves, .ps-ambient-sweep, .ps-dots { animation: none; will-change: auto; }
@@ -1544,6 +1557,7 @@
 .ps-background-paused .ps-bubble, .ps-background-paused .ps-dots, .ps-background-paused .ps-decorative-curves { animation-play-state: paused; }
 @media (prefers-reduced-motion: reduce) {
   .ps-bubble, .ps-dots, .ps-decorative-curves { animation: none !important; }
+  .ps-center-mark, .ps-home-welcome::after { animation: none !important; }
   .ps-ambient-sweep { display: none; }
   .ps-menu-card-active .symbol-education .education-cap { animation: none; }
 }

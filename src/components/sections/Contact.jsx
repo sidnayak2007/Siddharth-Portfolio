@@ -2,6 +2,8 @@ import { useState } from "react";
 import { contactFallback } from "../../data/portfolioDefaults";
 import { usePublicPortfolioDocument } from "../../hooks/usePublicPortfolioDocument";
 import { safeHref } from "../../utils/url";
+import gmailLogo from "../../assets/download.png";
+import whatsappLogo from "../../assets/download (7).jpeg";
 import {
   PortfolioCard,
   PortfolioEmpty,
@@ -27,25 +29,14 @@ function ContactPlatformLogo({ platform }) {
       </svg>
     </span>
   );
-  if (platform === "whatsapp") return (
-    <span className="portfolio-contact-logo portfolio-contact-logo-whatsapp" aria-hidden="true">
-      <svg viewBox="0 0 32 32" focusable="false">
-        <circle cx="16" cy="16" r="15" fill="#25D366" />
-        <path fill="#fff" d="M8.1 24.5 9.2 20a10 10 0 1 1 3.7 3.7zm5-4.2c2.1 1.3 4.8 2.2 7.4.1.5-.4 1-1.3.8-1.8-.1-.3-1.2-.8-2.1-1.2-.7-.3-1.2-.5-1.5.1l-.9 1.1c-.3.3-.5.4-.9.2-1.1-.5-2.5-1.3-3.7-3-.3-.4-.1-.7.1-.9l.7-.8c.2-.3.2-.5.1-.8l-.9-2.1c-.2-.5-.5-.5-.8-.5h-.7c-.3 0-.7.1-1 .5-.4.4-1.2 1.2-1.2 2.8s1.2 3.1 1.4 3.3c.2.3 2.3 3.5 5.2 4.8" />
-      </svg>
-    </span>
-  );
-  if (platform === "gmail") return (
-    <span className="portfolio-contact-logo portfolio-contact-logo-gmail" aria-hidden="true">
-      <svg viewBox="0 0 40 32" focusable="false">
-        <path fill="#4285F4" d="M4 7.4 8 10v17H4a3 3 0 0 1-3-3V9.7c0-2.4 1.6-3.4 3-2.3" />
-        <path fill="#34A853" d="M32 10 36 7.4c1.4-1.1 3 .1 3 2.3V24a3 3 0 0 1-3 3h-4z" />
-        <path fill="#FBBC04" d="M32 10v17h4a3 3 0 0 0 3-3V12l-7-2" />
-        <path fill="#EA4335" d="M4 7.4 20 19 36 7.4c1.5-1.1 3.4-.1 3.4 2.2v2.1L20 25 1 11.7V9.6c0-2.3 1.5-3.3 3-2.2" />
-        <path fill="#C5221F" d="M4 27h4V10L4 7.4c-1.4-1.1-3 .1-3 2.3V24a3 3 0 0 0 3 3" />
-      </svg>
-    </span>
-  );
+  if (platform === "whatsapp" || platform === "gmail") {
+    const isWhatsapp = platform === "whatsapp";
+    return (
+      <span className={`portfolio-contact-logo portfolio-contact-logo-${platform}`} aria-hidden="true">
+        <img src={isWhatsapp ? whatsappLogo : gmailLogo} alt="" />
+      </span>
+    );
+  }
   return null;
 }
 
