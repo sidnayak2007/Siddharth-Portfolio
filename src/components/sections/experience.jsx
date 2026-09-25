@@ -5,7 +5,6 @@ import PortfolioImage from "./PortfolioImage";
 import {
   PortfolioCard,
   PortfolioEmpty,
-  PortfolioLink,
   PortfolioMore,
   PortfolioSection,
   PortfolioTags,
@@ -63,15 +62,14 @@ export default function Experience({ onBack, previewData }) {
         const media = Array.isArray(item.media)
           ? item.media.filter((asset) => asset && safeHref(asset.url))
           : [];
-        const images = media.filter((asset) => asset.kind === "image" || /\.(jpe?g|png|webp|gif)(?:\?|$)/i.test(asset.url));
-        const documents = media.filter((asset) => !images.includes(asset));
+        const images = media.filter((asset) => asset.kind === "image" && !/\.pdf(?:[?#]|$)/i.test(asset.url));
 
         const hasDetails = Boolean(
           highlights.length ||
           responsibilities.length ||
           achievements.length ||
-          media.length ||
-          safeHref(item.certificateUrl)
+          images.length ||
+          safeHref(item.certificateImageUrl)
         );
 
         const meta = [
@@ -135,24 +133,10 @@ export default function Experience({ onBack, previewData }) {
                   </div>
                 )}
 
-                {(documents.length > 0 || safeHref(item.certificateUrl)) && (
-                  <div className="portfolio-links">
-                    {safeHref(item.certificateUrl) && (
-                      <PortfolioLink href={item.certificateUrl}>
-                        Certificate
-                      </PortfolioLink>
-                    )}
-
-                    {documents.map((asset, mediaIndex) => (
-                      <PortfolioLink
-                        href={asset.url}
-                        key={asset.id || mediaIndex}
-                      >
-                        {asset.label || asset.name || "Attached media"}
-                      </PortfolioLink>
-                    ))}
-                  </div>
+                {safeHref(item.certificateImageUrl) && (
+                  <PortfolioImage className="portfolio-detail-picture" src={item.certificateImageUrl} alt={`${item.organization || "Experience"} certificate`} caption="Certificate image" />
                 )}
+
               </PortfolioMore>
             )}
           </PortfolioCard>

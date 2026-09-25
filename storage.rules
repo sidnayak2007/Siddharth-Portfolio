@@ -16,14 +16,7 @@ service firebase.storage {
       return request.resource != null
         && request.resource.size > 0
         && request.resource.size <= 8 * 1024 * 1024
-        && request.resource.contentType.matches('image/(jpeg|png|webp|gif)');
-    }
-
-    function validPdf() {
-      return request.resource != null
-        && request.resource.size > 0
-        && request.resource.size <= 15 * 1024 * 1024
-        && request.resource.contentType == 'application/pdf';
+        && request.resource.contentType.matches('image/(jpeg|png|webp)');
     }
 
     match /portfolio/{sectionId}/images/{itemId}/{fileName} {
@@ -39,10 +32,6 @@ service firebase.storage {
 
     match /portfolio/{sectionId}/documents/{itemId}/{fileName} {
       allow read: if sectionId in ['experience', 'education', 'resume'];
-      allow create: if isAdmin()
-        && sectionId in ['experience', 'education', 'resume']
-        && validPath(itemId, fileName)
-        && validPdf();
       allow update: if false;
       allow delete: if isAdmin()
         && sectionId in ['experience', 'education', 'resume'];

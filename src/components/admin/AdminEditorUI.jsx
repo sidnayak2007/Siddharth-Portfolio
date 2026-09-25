@@ -192,7 +192,7 @@ export function MediaUploadField({ kind = "image", value, onChange, label, fallb
     setError("");
     setNotice("");
     try {
-      const uploaded = await uploadPortfolioFile({ file, kind, onProgress: setProgress });
+      const uploaded = await uploadPortfolioFile({ file, kind: "image", onProgress: setProgress });
       onChange(uploaded);
       setNotice("Uploaded to Cloudinary. Save changes to publish it.");
     } catch (uploadError) {
@@ -207,44 +207,22 @@ export function MediaUploadField({ kind = "image", value, onChange, label, fallb
     setError("");
     setNotice("");
   };
-  const editPdfUrl = (event) => {
-    onChange({ url: event.target.value, path: "", name: "", kind: "pdf" });
-    setError("");
-    setNotice("");
-  };
-  const validatePdfUrl = () => {
-    const rawUrl = String(value?.url || "").trim();
-    if (!rawUrl) return;
-    try {
-      const parsed = new URL(rawUrl);
-      if (parsed.protocol !== "https:" || !parsed.hostname) throw new Error();
-      setError("");
-    } catch {
-      setError("Enter a full HTTPS link to a public PDF.");
-    }
-  };
   const url = /^https:\/\//i.test(value?.url || "") ? safeHref(value?.url) : "";
   return (
-    <div className={`admin-media-field ${kind === "pdf" ? "is-pdf" : ""}`}>
-      <div className="admin-field-heading"><span>{label}</span><small>{kind === "pdf" ? "PDF · max 15 MB" : "JPG, PNG, WebP or GIF · max 8 MB"}</small></div>
+    <div className="admin-media-field">
+      <div className="admin-field-heading"><span>{label}</span><small>JPG, PNG or WebP · max 8 MB</small></div>
       {(url || fallbackUrl) && (
         <div className="admin-media-preview">
-          {kind === "image" ? <img src={url || fallbackUrl} alt={label || "Current image"} /> : <div className="admin-pdf-preview"><a href={url} target="_blank" rel="noopener noreferrer">{value?.name || "Open current PDF"}</a><iframe src={url} title={`${label || "Document"} PDF preview`} /></div>}
+          <img src={url || fallbackUrl} alt={label || "Current image"} />
           <div>
-            <label htmlFor={inputId} className="admin-secondary-button">{uploading ? "Uploading…" : "Replace file"}</label>
-            {kind === "image" && url && <a className="admin-secondary-button" href={url} target="_blank" rel="noopener noreferrer">See full picture</a>}
+            <label htmlFor={inputId} className="admin-secondary-button">{uploading ? "Uploading…" : "Replace image"}</label>
+            {url && <a className="admin-secondary-button" href={url} target="_blank" rel="noopener noreferrer">See full picture</a>}
             {url && <button type="button" className="admin-danger-text" onClick={remove} disabled={uploading}>Remove</button>}
           </div>
         </div>
       )}
-      {!url && !fallbackUrl && <label htmlFor={inputId} className="admin-upload-drop"><strong>{uploading ? "Uploading…" : `Choose ${kind === "pdf" ? "PDF" : "image"}`}</strong><span>Upload to Cloudinary from this computer</span></label>}
-      <input id={inputId} className="admin-file-input" type="file" accept={kind === "pdf" ? "application/pdf" : "image/jpeg,image/png,image/webp,image/gif"} onChange={chooseFile} disabled={uploading} />
-      {kind === "pdf" && (
-        <label className="admin-media-url">
-          <span>Or use a public PDF link</span>
-          <input type="url" inputMode="url" value={value?.url || ""} placeholder="https://example.com/resume.pdf" onChange={editPdfUrl} onBlur={validatePdfUrl} disabled={uploading} />
-        </label>
-      )}
+      {!url && !fallbackUrl && <label htmlFor={inputId} className="admin-upload-drop"><strong>{uploading ? "Uploading…" : "Choose image"}</strong><span>Upload to Cloudinary from this computer</span></label>}
+      <input id={inputId} className="admin-file-input" type="file" accept="image/jpeg,image/png,image/webp" onChange={chooseFile} disabled={uploading} />
       {uploading && <div className="admin-upload-progress" role="progressbar" aria-label={`${label} upload`} aria-valuenow={progress} aria-valuemin="0" aria-valuemax="100">
         <span style={{ width: `${progress}%` }} />
         <small>{progress < 100 ? `Uploading ${progress}%` : "Processing upload…"}</small>
@@ -272,18 +250,29 @@ export function MediaListEditor({ itemId, assets = [], onChange, kind = "image",
     const target = list[index];
     onChange((current) => (Array.isArray(current) ? current : []).filter((item, itemIndex) => !matches(item, target, itemIndex, index)));
   };
+  const move = (index, direction) => onChange((current) => {
+    const next = Array.isArray(current) ? [...current] : [];
+    const targetIndex = index + direction;
+    if (targetIndex < 0 || targetIndex >= next.length) return next;
+    [next[index], next[targetIndex]] = [next[targetIndex], next[index]];
+    return next;
+  });
   return (
     <div className="admin-subeditor">
       <h3>{label}</h3>
-      {list.length === 0 && <p className="admin-inline-empty">No attachments yet.</p>}
+      {list.length === 0 && <p className="admin-inline-empty">No images yet.</p>}
       {list.map((asset, index) => (
         <div className="admin-media-list-item" key={asset.id || index}>
-          <Field label="Attachment label" value={asset.label} onChange={(text) => update(index, { label: text })} full />
+          <Field label="Image label" value={asset.label} onChange={(text) => update(index, { label: text })} full />
           <MediaUploadField kind={kind} value={asset} onChange={(next) => update(index, next)} label={`${label} ${index + 1}`} />
-          <button type="button" className="admin-danger-text" onClick={() => remove(index)}>Remove attachment</button>
+          <div className="admin-item-actions">
+            <button type="button" onClick={() => move(index, -1)} disabled={index === 0} aria-label={`Move ${label} ${index + 1} up`}>↑</button>
+            <button type="button" onClick={() => move(index, 1)} disabled={index === list.length - 1} aria-label={`Move ${label} ${index + 1} down`}>↓</button>
+          </div>
+          <button type="button" className="admin-danger-text" onClick={() => remove(index)}>Remove image</button>
         </div>
       ))}
-      {list.length < max && <button type="button" className="admin-add" onClick={() => onChange((current) => [...(Array.isArray(current) ? current : []), { id: `${itemId}-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`, label: "", url: "", path: "", name: "" }])}>+ Add attachment</button>}
+      {list.length < max && <button type="button" className="admin-add" onClick={() => onChange((current) => [...(Array.isArray(current) ? current : []), { id: `${itemId}-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`, label: "", url: "", path: "", name: "", kind: "image" }])}>+ Add image</button>}
     </div>
   );
 }

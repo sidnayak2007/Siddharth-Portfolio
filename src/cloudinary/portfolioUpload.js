@@ -5,14 +5,9 @@ export const CLOUDINARY_UPLOAD_PRESET = "siddharth_portfolio";
 
 const FILE_RULES = {
   image: {
-    types: new Set(["image/jpeg", "image/png", "image/webp", "image/gif"]),
+    types: new Set(["image/jpeg", "image/png", "image/webp"]),
     maxBytes: 8 * 1024 * 1024,
-    description: "a JPG, PNG, WebP, or GIF under 8 MB",
-  },
-  pdf: {
-    types: new Set(["application/pdf"]),
-    maxBytes: 15 * 1024 * 1024,
-    description: "a PDF under 15 MB",
+    description: "a JPG, PNG, or WebP image under 8 MB",
   },
 };
 
@@ -30,7 +25,6 @@ export async function uploadPortfolioFile({ file, kind = "image", onProgress }) 
   }
   validatePortfolioFile(file, kind);
 
-  // Cloudinary treats PDFs as image assets. The preset must permit PDF uploads.
   const body = new FormData();
   body.append("file", file);
   body.append("upload_preset", CLOUDINARY_UPLOAD_PRESET);

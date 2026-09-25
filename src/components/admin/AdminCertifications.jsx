@@ -17,9 +17,6 @@ const emptyCertification = () => ({
   imageUrl: "",
   imagePath: "",
   imageName: "",
-  pdfUrl: "",
-  pdfPath: "",
-  pdfName: "",
   visible: false,
 });
 
@@ -72,9 +69,6 @@ export default function AdminCertifications() {
         imageUrl: String(item.imageUrl || "").trim(),
         imagePath: String(item.imagePath || ""),
         imageName: String(item.imageName || ""),
-        pdfUrl: String(item.pdfUrl || "").trim(),
-        pdfPath: String(item.pdfPath || ""),
-        pdfName: String(item.pdfName || ""),
         visible: Boolean(item.visible),
       })),
     };
@@ -83,7 +77,7 @@ export default function AdminCertifications() {
     clean.items.forEach((item, index) => {
       if (!item.title || !item.issuer) errors.push(`Certification ${index + 1} needs a title and issuer.`);
       if (item.expiresOn && item.issuedOn && item.expiresOn < item.issuedOn) errors.push(`Certification ${index + 1} expires before it was issued.`);
-      if (![item.credentialUrl, item.imageUrl, item.pdfUrl].every(validHttpsUrl)) errors.push(`Certification ${index + 1} needs full HTTPS media and verification links.`);
+      if (![item.credentialUrl, item.imageUrl].every(validHttpsUrl)) errors.push(`Certification ${index + 1} needs full HTTPS image and verification links.`);
     });
     editor.save(clean, errors);
   };
@@ -124,7 +118,6 @@ export default function AdminCertifications() {
               </div>
               <div className="admin-subeditor"><h3>Skills covered</h3><StringList values={item.skills || []} onChange={(value) => updateItem(index, "skills", value)} addLabel="Add skill" placeholder="Skill or topic" max={12} /></div>
               <MediaUploadField kind="image" label="Certificate picture" value={{ url: item.imageUrl, path: item.imagePath, name: item.imageName }} onChange={(asset) => editor.setValue((current) => ({ ...current, items: (current.items || []).map((entry, itemIndex) => (item.id ? entry.id === item.id : itemIndex === index) ? { ...entry, imageUrl: asset.url, imagePath: asset.path, imageName: asset.name } : entry) }))} />
-              <MediaUploadField kind="pdf" label="Certificate PDF" value={{ url: item.pdfUrl, path: item.pdfPath, name: item.pdfName }} onChange={(asset) => editor.setValue((current) => ({ ...current, items: (current.items || []).map((entry, itemIndex) => (item.id ? entry.id === item.id : itemIndex === index) ? { ...entry, pdfUrl: asset.url, pdfPath: asset.path, pdfName: asset.name } : entry) }))} />
             </EntryCard>
           ))}
         </div>

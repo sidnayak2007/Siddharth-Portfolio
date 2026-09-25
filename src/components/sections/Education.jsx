@@ -5,7 +5,6 @@ import PortfolioImage from "./PortfolioImage";
 import {
   PortfolioCard,
   PortfolioEmpty,
-  PortfolioLink,
   PortfolioMore,
   PortfolioSection,
 } from "./PortfolioSectionUI";
@@ -67,9 +66,7 @@ export default function Education({ onBack, previewData }) {
 
         const media = Array.isArray(item.media)
           ? item.media.filter(
-              (asset) =>
-                asset &&
-                safeHref(asset.url)
+              (asset) => asset && asset.kind === "image" && safeHref(asset.url) && !/\.pdf(?:[?#]|$)/i.test(asset.url)
             )
           : [];
 
@@ -190,16 +187,9 @@ export default function Education({ onBack, previewData }) {
                 )}
 
                 {media.length > 0 && (
-                  <div className="portfolio-links">
+                  <div className="portfolio-gallery">
                     {media.map((asset, mediaIndex) => (
-                      <PortfolioLink
-                        href={asset.url}
-                        key={asset.id || mediaIndex}
-                      >
-                        {asset.label ||
-                          asset.name ||
-                          "Education attachment"}
-                      </PortfolioLink>
+                      <PortfolioImage key={asset.id || mediaIndex} className="portfolio-gallery-item" src={asset.url} alt={asset.label || `${item.institution || "Education"} image ${mediaIndex + 1}`} caption={asset.label || asset.name || `Image ${mediaIndex + 1}`} />
                     ))}
                   </div>
                 )}

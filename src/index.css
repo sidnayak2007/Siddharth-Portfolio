@@ -39,8 +39,8 @@
   -moz-osx-font-smoothing:
     grayscale;
 
-  color-scheme:
-    light;
+  /* Keep browser provided controls and scrollbars in the original light UI. */
+  color-scheme: only light;
 
   -webkit-text-size-adjust:
     100%;
@@ -80,6 +80,8 @@ html {
 
   background:
     #eff6ff;
+
+  color-scheme: only light;
 }
 
 body {
@@ -97,6 +99,8 @@ body {
 
   background:
     #eff6ff;
+
+  color-scheme: only light;
 
   font-family: inherit;
 

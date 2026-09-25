@@ -242,14 +242,15 @@ service cloud.firestore {
         && request.resource.data.intro is string
         && request.resource.data.intro.size() <= 1500
 
-        && request.resource.data.pdfUrl is string
-        && request.resource.data.pdfUrl.size() <= 3000
-
-        && request.resource.data.pdfPath is string
-        && request.resource.data.pdfPath.size() <= 1000
-
-        && request.resource.data.pdfName is string
-        && request.resource.data.pdfName.size() <= 300
+        // Optional legacy PDF fields remain valid during merged updates.
+        && request.resource.data.get("pdfUrl", "") is string
+        && request.resource.data.get("pdfUrl", "").size() <= 3000
+        && request.resource.data.get("pdfPath", "") is string
+        && request.resource.data.get("pdfPath", "").size() <= 1000
+        && request.resource.data.get("pdfName", "") is string
+        && request.resource.data.get("pdfName", "").size() <= 300
+        && request.resource.data.get("resumeImages", []) is list
+        && request.resource.data.get("resumeImages", []).size() <= 20
 
         && request.resource.data.get("title", "") is string
         && request.resource.data.get("title", "").size() <= 300

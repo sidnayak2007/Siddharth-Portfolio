@@ -313,11 +313,7 @@ export const resumeFallback = {
   intro:
     "A snapshot of my education, experiences, projects and the things I continue to learn along the way.",
 
-  pdfUrl: "",
-
-  pdfPath: "",
-
-  pdfName: "",
+  resumeImages: [],
 
   timeline: [
     {

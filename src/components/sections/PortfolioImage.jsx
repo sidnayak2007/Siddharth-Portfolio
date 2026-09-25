@@ -13,12 +13,12 @@ function cloudinaryImageUrl(url, width) {
   return `${prefix}c_limit,w_${width}/q_auto/f_auto/${url.slice(prefix.length)}`;
 }
 
-export default function PortfolioImage({ src, alt = "Portfolio image", caption = "", className = "", imageClassName = "", compact = false }) {
+export default function PortfolioImage({ src, alt = "Portfolio image", caption = "", className = "", imageClassName = "", compact = false, original = false, onLoad, onImageError }) {
   const [open, setOpen] = useState(false);
   const [failedUrl, setFailedUrl] = useState("");
   const triggerRef = useRef(null);
   const url = displayableImageUrl(src);
-  const optimized = failedUrl === url ? "" : cloudinaryImageUrl(url, compact ? 192 : 900);
+  const optimized = original || failedUrl === url ? "" : cloudinaryImageUrl(url, compact ? 192 : 900);
   const widths = compact ? [96, 192, 320] : [480, 900, 1400];
   const srcSet = optimized
     ? widths.map((width) => `${cloudinaryImageUrl(url, width)} ${width}w`).join(", ")
@@ -70,7 +70,11 @@ export default function PortfolioImage({ src, alt = "Portfolio image", caption =
           alt={alt}
           loading="lazy"
           decoding="async"
-          onError={() => { if (optimized) setFailedUrl(url); }}
+          onLoad={onLoad}
+          onError={() => {
+            if (optimized) setFailedUrl(url);
+            else onImageError?.();
+          }}
         />
         {!compact && <span className="portfolio-image-label">{caption || "See full picture"}</span>}
       </button>

@@ -91,7 +91,7 @@ export default function AdminEducation() {
               <div className="admin-subeditor"><h3>Awards</h3><StringList values={item.awards || []} onChange={(value) => updateItem(index, "awards", value)} addLabel="Add award" placeholder="Award" /></div>
               <MediaUploadField sectionId="education" itemId={`${item.id || index}-logo`} label="Institution logo" value={{ url: item.logoUrl, path: item.logoPath }} onChange={(asset) => editor.setValue((current) => ({ ...current, items: (current.items || []).map((entry, itemIndex) => (item.id ? entry.id === item.id : itemIndex === index) ? { ...entry, logoUrl: asset.url, logoPath: asset.path } : entry) }))} />
               <MediaUploadField sectionId="education" itemId={`${item.id || index}-image`} label="Education image" value={{ url: item.imageUrl, path: item.imagePath }} onChange={(asset) => editor.setValue((current) => ({ ...current, items: (current.items || []).map((entry, itemIndex) => (item.id ? entry.id === item.id : itemIndex === index) ? { ...entry, imageUrl: asset.url, imagePath: asset.path } : entry) }))} />
-              <MediaListEditor sectionId="education" itemId={item.id || String(index)} assets={item.media} onChange={(value) => updateItem(index, "media", value)} kind="pdf" label="Certificates and documents" />
+              <MediaListEditor sectionId="education" itemId={item.id || String(index)} assets={item.media} onChange={(value) => updateItem(index, "media", value)} kind="image" label="Supporting images" />
             </EntryCard>
           ))}
         </div>

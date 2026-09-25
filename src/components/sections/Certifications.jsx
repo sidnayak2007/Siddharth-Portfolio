@@ -1,6 +1,5 @@
 import { certificationsFallback } from "../../data/portfolioDefaults";
 import { usePublicPortfolioDocument } from "../../hooks/usePublicPortfolioDocument";
-import { safeHref } from "../../utils/url";
 import PortfolioImage from "./PortfolioImage";
 import { PortfolioEmpty, PortfolioLink, PortfolioSection, PortfolioTags } from "./PortfolioSectionUI";
 import "../../css/certifications.css";
@@ -73,10 +72,9 @@ export default function Certifications({ onBack, previewData }) {
               {item.description && <p className="certification-description">{item.description}</p>}
               {item.credentialId && <p className="certification-id"><strong>Credential ID</strong> {item.credentialId}</p>}
               <PortfolioTags items={item.skills} label="Certification skills" />
-              {(safeHref(item.credentialUrl) || safeHref(item.pdfUrl)) && (
+              {item.credentialUrl && (
                 <div className="portfolio-links">
                   <PortfolioLink href={item.credentialUrl}>Verify credential</PortfolioLink>
-                  <PortfolioLink href={item.pdfUrl}>View certificate PDF</PortfolioLink>
                 </div>
               )}
             </div>

@@ -6,7 +6,7 @@ import { CheckboxField, EditorPage, EditorSection, EntryCard, Field, MediaListEd
 
 const roleTypes = ["Internship", "Full-time", "Part-time", "Contract", "Freelance", "Volunteering", "Leadership", "Other"];
 const locationTypes = ["On-site", "Hybrid", "Remote"];
-const emptyExperience = () => ({ id: createContentId("experience"), role: "", organization: "", type: "", location: "", locationType: "", startDate: "", endDate: "", current: false, summary: "", responsibilities: [], achievements: [], highlights: [], skills: [], logoUrl: "", logoPath: "", certificateUrl: "", certificatePath: "", certificateName: "", media: [] });
+const emptyExperience = () => ({ id: createContentId("experience"), role: "", organization: "", type: "", location: "", locationType: "", startDate: "", endDate: "", current: false, summary: "", responsibilities: [], achievements: [], highlights: [], skills: [], logoUrl: "", logoPath: "", certificateImageUrl: "", certificateImagePath: "", certificateImageName: "", media: [] });
 const cleanList = (items) => (Array.isArray(items) ? items : []).map((item) => String(item || "").trim()).filter(Boolean);
 
 export default function AdminExperience() {
@@ -91,7 +91,7 @@ export default function AdminExperience() {
               <div className="admin-subeditor"><h3>Other highlights</h3><StringList values={item.highlights || []} onChange={(value) => updateItem(index, "highlights", value)} addLabel="Add highlight" placeholder="Additional detail" /></div>
               <div className="admin-subeditor"><h3>Associated skills</h3><StringList values={item.skills || []} onChange={(value) => updateItem(index, "skills", value)} addLabel="Add skill" placeholder="Skill or tool" /></div>
               <MediaUploadField sectionId="experience" itemId={`${item.id || index}-logo`} label="Organisation logo" value={{ url: item.logoUrl, path: item.logoPath }} onChange={(asset) => editor.setValue((current) => ({ ...current, items: (current.items || []).map((entry, itemIndex) => (item.id ? entry.id === item.id : itemIndex === index) ? { ...entry, logoUrl: asset.url, logoPath: asset.path } : entry) }))} />
-              <MediaUploadField sectionId="experience" itemId={`${item.id || index}-certificate`} kind="pdf" label="Certificate" value={{ url: item.certificateUrl, path: item.certificatePath, name: item.certificateName }} onChange={(asset) => editor.setValue((current) => ({ ...current, items: (current.items || []).map((entry, itemIndex) => (item.id ? entry.id === item.id : itemIndex === index) ? { ...entry, certificateUrl: asset.url, certificatePath: asset.path, certificateName: asset.name } : entry) }))} />
+              <MediaUploadField sectionId="experience" itemId={`${item.id || index}-certificate`} kind="image" label="Certificate image" value={{ url: item.certificateImageUrl, path: item.certificateImagePath, name: item.certificateImageName }} onChange={(asset) => editor.setValue((current) => ({ ...current, items: (current.items || []).map((entry, itemIndex) => (item.id ? entry.id === item.id : itemIndex === index) ? { ...entry, certificateImageUrl: asset.url, certificateImagePath: asset.path, certificateImageName: asset.name } : entry) }))} />
               <MediaListEditor sectionId="experience" itemId={item.id || String(index)} assets={item.media} onChange={(value) => updateItem(index, "media", value)} label="Supporting images" />
             </EntryCard>
           ))}

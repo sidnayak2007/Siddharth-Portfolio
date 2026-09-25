@@ -2,7 +2,7 @@ import { createContentId, resumeFallback } from "../../data/portfolioDefaults";
 import { useAdminPortfolioDocument } from "../../hooks/useAdminPortfolioDocument";
 import { moveArrayItem } from "../../utils/array";
 import Resume from "../sections/Resume";
-import { EditorPage, EditorSection, EntryCard, Field, MediaUploadField } from "./AdminEditorUI";
+import { EditorPage, EditorSection, EntryCard, Field, MediaListEditor } from "./AdminEditorUI";
 
 export default function AdminResume() {
   const editor = useAdminPortfolioDocument("resume", resumeFallback);
@@ -19,9 +19,7 @@ export default function AdminResume() {
       title: String(data.title || "").trim(),
       description: String(data.description || "").trim(),
       lastUpdated: String(data.lastUpdated || "").trim(),
-      pdfUrl: data.pdfUrl || "",
-      pdfPath: data.pdfPath || "",
-      pdfName: data.pdfName || "",
+      resumeImages: Array.isArray(data.resumeImages) ? data.resumeImages.filter((asset) => asset?.url) : [],
       timeline: timeline.map((item) => ({ ...item, year: String(item.year || "").trim(), title: String(item.title || "").trim(), description: String(item.description || "").trim() })),
     };
     const errors = [];
@@ -34,7 +32,7 @@ export default function AdminResume() {
   };
 
   return (
-    <EditorPage sectionId="resume" number="07" title="Resume" description="Manage the overview, timeline and latest published PDF." editor={editor} onSave={save} PreviewComponent={Resume}>
+    <EditorPage sectionId="resume" number="07" title="Resume" description="Manage the overview, resume images and timeline." editor={editor} onSave={save} PreviewComponent={Resume}>
       <EditorSection number="01" title="Resume information">
         <div className="admin-form-grid">
           <Field label="Eyebrow" value={data.eyebrow} onChange={(value) => update("eyebrow", value)} />
@@ -45,8 +43,8 @@ export default function AdminResume() {
           <Field label="Resume description" value={data.description} onChange={(value) => update("description", value)} multiline full />
         </div>
       </EditorSection>
-      <EditorSection number="02" title="Published PDF" description="The existing public PDF stays live until you save a replacement.">
-        <MediaUploadField sectionId="resume" itemId="resume" kind="pdf" label="Resume PDF" value={{ url: data.pdfUrl, path: data.pdfPath, name: data.pdfName }} onChange={(asset) => editor.setValue((current) => ({ ...current, pdfUrl: asset.url, pdfPath: asset.path, pdfName: asset.name }))} />
+      <EditorSection number="02" title="Resume images" description="Upload JPG, PNG or WebP images in page order. Each image is stored in Cloudinary; visitors can enlarge or download the original.">
+        <MediaListEditor itemId="resume-page" assets={data.resumeImages} onChange={(value) => update("resumeImages", typeof value === "function" ? value(data.resumeImages || []) : value)} kind="image" label="Resume pages" max={20} />
       </EditorSection>
       <EditorSection number="03" title="Timeline" meta={`${timeline.length} / 20`}>
         <div className="admin-card-list">

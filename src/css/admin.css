@@ -4384,8 +4384,6 @@
 .admin-upload-error, .admin-upload-notice { margin: 0; padding: 9px 11px; border-radius: 9px; font-size: 12px; line-height: 1.4; }
 .admin-upload-error { background: #fff0ef; color: #934744; }
 .admin-upload-notice { background: #eaf6ee; color: #426e53; }
-.admin-pdf-preview { width: min(100%, 680px); }
-.admin-pdf-preview iframe { width: 100%; height: 420px; margin-top: 12px; border: 1px solid var(--admin-line); border-radius: 10px; background: #fff; }
 .admin-skill-row { display: grid; grid-template-columns: minmax(0, 1fr) repeat(3, auto); align-items: end; gap: 8px; }
 .admin-skill-row button { min-height: 42px; padding: 0 8px; }
 .admin-associations { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
