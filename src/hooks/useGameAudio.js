@@ -10,16 +10,7 @@ import {
 KEEP IT TOGETHER — AUDIO MANAGER
 =========================================================
 
-Expected files:
-
-public/audio/background.mp3
-public/audio/shield-block.mp3
-public/audio/balloon-hit.mp3
-public/audio/game-over.mp3
-public/audio/ui-click.mp3
-
-The game will still work if these files
-have not been added yet.
+Game audio is stored under public/audio.
 
 Browser autoplay rules are respected:
 background music should only be started
@@ -30,21 +21,23 @@ after a user interaction such as START GAME.
 const AUDIO_STORAGE_KEY =
   "keep-together-audio";
 
+const AUDIO_BASE_PATH = `${import.meta.env.BASE_URL}audio/`;
+
 const AUDIO_FILES = {
   background:
-    "/audio/background.mp3",
+    `${AUDIO_BASE_PATH}background.wav`,
 
   block:
-    "/audio/shield-block.mp3",
+    `${AUDIO_BASE_PATH}shield-block.wav`,
 
   hit:
-    "/audio/balloon-hit.mp3",
+    `${AUDIO_BASE_PATH}balloon-hit.wav`,
 
   gameOver:
-    "/audio/game-over.mp3",
+    `${AUDIO_BASE_PATH}game-over.wav`,
 
   click:
-    "/audio/ui-click.mp3",
+    `${AUDIO_BASE_PATH}ui-click.wav`,
 };
 
 const AUDIO_VOLUMES = {
@@ -195,55 +188,30 @@ export default function useGameAudio() {
   */
 
   useEffect(() => {
-    audioRef.current.background =
-      createAudio(
-        AUDIO_FILES.background,
-        {
-          volume:
-            AUDIO_VOLUMES.background,
-          loop: true,
-        }
-      );
+    const audioInstances = {
+      background: createAudio(AUDIO_FILES.background, {
+        volume: AUDIO_VOLUMES.background,
+        loop: true,
+      }),
+      block: createAudio(AUDIO_FILES.block, {
+        volume: AUDIO_VOLUMES.block,
+      }),
+      hit: createAudio(AUDIO_FILES.hit, {
+        volume: AUDIO_VOLUMES.hit,
+      }),
+      gameOver: createAudio(AUDIO_FILES.gameOver, {
+        volume: AUDIO_VOLUMES.gameOver,
+      }),
+      click: createAudio(AUDIO_FILES.click, {
+        volume: AUDIO_VOLUMES.click,
+      }),
+    };
 
-    audioRef.current.block =
-      createAudio(
-        AUDIO_FILES.block,
-        {
-          volume:
-            AUDIO_VOLUMES.block,
-        }
-      );
-
-    audioRef.current.hit =
-      createAudio(
-        AUDIO_FILES.hit,
-        {
-          volume:
-            AUDIO_VOLUMES.hit,
-        }
-      );
-
-    audioRef.current.gameOver =
-      createAudio(
-        AUDIO_FILES.gameOver,
-        {
-          volume:
-            AUDIO_VOLUMES.gameOver,
-        }
-      );
-
-    audioRef.current.click =
-      createAudio(
-        AUDIO_FILES.click,
-        {
-          volume:
-            AUDIO_VOLUMES.click,
-        }
-      );
+    audioRef.current = audioInstances;
 
     return () => {
       Object.values(
-        audioRef.current
+        audioInstances
       ).forEach(
         (audio) => {
           if (!audio) {
@@ -265,6 +233,15 @@ export default function useGameAudio() {
           }
         }
       );
+      if (audioRef.current === audioInstances) {
+        audioRef.current = {
+          background: null,
+          block: null,
+          hit: null,
+          gameOver: null,
+          click: null,
+        };
+      }
     };
   }, []);
 
@@ -553,79 +530,26 @@ export default function useGameAudio() {
   ========================================================
   */
 
- useEffect(() => {
-  const audioInstances = {
-    background: createAudio(
-      AUDIO_FILES.background,
-      {
-        volume:
-          AUDIO_VOLUMES.background,
-        loop: true,
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      const music = audioRef.current.background;
+      if (!music) return;
+
+      if (document.hidden) {
+        music.pause();
+        return;
       }
-    ),
 
-    block: createAudio(
-      AUDIO_FILES.block,
-      {
-        volume:
-          AUDIO_VOLUMES.block,
+      if (audioEnabled && musicRequestedRef.current) {
+        music.play().catch(() => {
+          // Resume failures must never interrupt gameplay.
+        });
       }
-    ),
+    };
 
-    hit: createAudio(
-      AUDIO_FILES.hit,
-      {
-        volume:
-          AUDIO_VOLUMES.hit,
-      }
-    ),
-
-    gameOver: createAudio(
-      AUDIO_FILES.gameOver,
-      {
-        volume:
-          AUDIO_VOLUMES.gameOver,
-      }
-    ),
-
-    click: createAudio(
-      AUDIO_FILES.click,
-      {
-        volume:
-          AUDIO_VOLUMES.click,
-      }
-    ),
-  };
-
-  audioRef.current =
-    audioInstances;
-
-  return () => {
-    Object.values(
-      audioInstances
-    ).forEach(
-      (audio) => {
-        if (!audio) {
-          return;
-        }
-
-        audio.pause();
-
-        audio.removeAttribute(
-          "src"
-        );
-
-        try {
-          audio.load();
-        } catch {
-          /*
-          Cleanup failure is harmless.
-          */
-        }
-      }
-    );
-  };
-}, []);
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+    return () => document.removeEventListener("visibilitychange", handleVisibilityChange);
+  }, [audioEnabled]);
 
   /*
   ========================================================
