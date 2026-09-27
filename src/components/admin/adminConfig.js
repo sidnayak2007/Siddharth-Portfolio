@@ -5,6 +5,5 @@ export const ADMIN_SECTIONS = [
   { id: "skills", number: "04", title: "Skills", description: "Categories and links to related work." },
   { id: "education", number: "05", title: "Education", description: "Qualifications, achievements and documents." },
   { id: "certifications", number: "06", title: "Certifications", description: "Credentials, certificate images and verification links." },
-  { id: "resume", number: "07", title: "Resume", description: "Resume images, details and timeline." },
-  { id: "contact", number: "09", title: "Contact", description: "Professional links, privacy and availability." },
+  { id: "contact", number: "08", title: "Contact", description: "Professional links, privacy and availability." },
 ];

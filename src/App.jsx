@@ -10,7 +10,6 @@ const Projects = lazy(() => import("./components/sections/Projects"));
 const Skills = lazy(() => import("./components/sections/Skills"));
 const Education = lazy(() => import("./components/sections/Education"));
 const Certifications = lazy(() => import("./components/sections/Certifications"));
-const Resume = lazy(() => import("./components/sections/Resume"));
 const Contact = lazy(() => import("./components/sections/Contact"));
 const Game = lazy(() => import("./components/sections/Game"));
 const AdminRoute = lazy(() => import("./components/admin/AdminRoute"));
@@ -22,7 +21,6 @@ const pages = {
   skills: Skills,
   education: Education,
   certifications: Certifications,
-  resume: Resume,
   game: Game,
   contact: Contact,
 };

@@ -289,7 +289,7 @@ export const educationFallback = {
 };
 
 /* =========================================================
-   RESUME
+   CERTIFICATIONS
 ========================================================= */
 
 export const certificationsFallback = {
@@ -299,87 +299,13 @@ export const certificationsFallback = {
   items: [],
 };
 
-export const resumeFallback = {
-  eyebrow:
-    "RESUME / 07",
-
-  title: "Resume",
-  description: "A full overview of my education, experience and projects.",
-  lastUpdated: "",
-
-  heading:
-    "The story so far.",
-
-  intro:
-    "A snapshot of my education, experiences, projects and the things I continue to learn along the way.",
-
-  resumeImages: [],
-
-  timeline: [
-    {
-      id:
-        "resume-education",
-
-      year:
-        "2025 — PRESENT",
-
-      title:
-        "BBA — Manipal Academy of Higher Education",
-
-      description:
-        "Building a foundation across business, marketing, finance and management while exploring technology and digital products alongside academics.",
-    },
-
-    {
-      id:
-        "resume-experience",
-
-      year: "2026",
-
-      title:
-        "Internships & Practical Learning",
-
-      description:
-        "Applying classroom learning through practical work, projects and experiences that strengthen communication, problem solving and business thinking.",
-    },
-
-    {
-      id:
-        "resume-projects",
-
-      year:
-        "ONGOING",
-
-      title:
-        "Digital Products & Experiments",
-
-      description:
-        "Building websites, applications, games and interactive experiences using modern tools and AI-assisted development.",
-    },
-
-    {
-      id:
-        "resume-growth",
-
-      year:
-        "ONGOING",
-
-      title:
-        "Learning by Building",
-
-      description:
-        "Continuously experimenting with new ideas, improving existing projects and learning the tools required to turn concepts into working products.",
-    },
-  ],
-};
-
 /* =========================================================
    CONTACT
 ========================================================= */
 
 export const contactFallback = {
   eyebrow:
-    "CONTACT / 09",
+    "CONTACT / 08",
 
   heading:
     "Let’s connect.",

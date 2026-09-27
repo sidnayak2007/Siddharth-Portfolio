@@ -80,7 +80,7 @@ const menuItems = [
   {
     id: "game",
     label: "Game",
-    number: "08",
+    number: "07",
     title: "Keep It Together",
     eyebrow: "Playground",
     description:
@@ -90,7 +90,7 @@ const menuItems = [
     soft: "#fff1f6",
   },
   {
-    id: "contact", label: "Contact", number: "09", title: "Contact",
+    id: "contact", label: "Contact", number: "08", title: "Contact",
     primary: "#4c8bca", secondary: "#9bc9ef", soft: "#edf7ff",
   },
 ];
@@ -317,13 +317,6 @@ EDUCATION
           Explore {activeItem.label}
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14m-5-5 5 5-5 5" /></svg>
         </button>
-        <nav className="ps-home-shortcuts" aria-label="Quick access">
-          {[{ id: "resume", label: "Resume" }].map((item) => (
-            <button key={item.id} type="button" disabled={opening} onClick={() => onOpenSection?.(item)}>
-              {item.label} <span aria-hidden="true">↗</span>
-            </button>
-          ))}
-        </nav>
       </section>
     </main>
   );

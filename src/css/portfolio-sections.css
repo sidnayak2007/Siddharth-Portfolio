@@ -21,7 +21,6 @@
 .portfolio-section-skills { --section-accent: #3f9ba6; }
 .portfolio-section-education { --section-accent: #4c8bd7; }
 .portfolio-section-certifications { --section-accent: #4b82b6; }
-.portfolio-section-resume { --section-accent: #bb8a50; }
 .portfolio-section-contact { --section-accent: #4a92ac; }
 
 .portfolio-section-light {
@@ -160,35 +159,20 @@
   padding: clamp(18px, 3vw, 28px);
 }
 
-.portfolio-resume-download,
 .portfolio-availability {
   padding: clamp(20px, 3vw, 28px);
 }
 
-.portfolio-resume-download {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  flex-wrap: wrap;
-  gap: 12px 24px;
-}
-
-.portfolio-resume-download h2,
 .portfolio-availability h2 {
   margin: 0 0 5px;
   font-size: 18px;
 }
 
-.portfolio-resume-download p,
 .portfolio-availability p {
   margin: 0;
   color: #627891;
   font-size: 14px;
   line-height: 1.6;
-}
-
-.portfolio-resume-download .portfolio-link {
-  flex: 0 0 auto;
 }
 
 .portfolio-card-header {
@@ -411,14 +395,6 @@
   object-fit: contain;
 }
 
-.portfolio-resume-preview {
-  width: 100%;
-  min-height: 620px;
-  border: 1px solid rgba(91, 131, 182, .17);
-  border-radius: 16px;
-  background: #fff;
-}
-
 .portfolio-profile {
   display: grid;
   grid-template-columns: auto minmax(0, 1fr);
@@ -492,9 +468,6 @@
     justify-items: center;
   }
 
-  .portfolio-resume-preview {
-    min-height: 470px;
-  }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -719,18 +692,6 @@
 .portfolio-case-study-part p { margin: 0; white-space: pre-line; }
 .portfolio-skill-group { display: grid; gap: 14px; }
 .portfolio-skill-group > h2 { margin: 9px 0 1px; color: #344e69; font-size: clamp(17px, 2vw, 22px); }
-.portfolio-resume-actions { display: flex; flex-wrap: wrap; gap: 10px; }
-.portfolio-resume-document { min-width: 0; padding: clamp(14px, 2vw, 24px); border: 1px solid rgba(91, 131, 182, .16); border-radius: 18px; background: rgba(255, 255, 255, .72); }
-.portfolio-resume-document h2 { margin: 0; color: #344e69; font-size: 19px; }
-.portfolio-resume-document p { margin: 5px 0 16px; color: #617891; font-size: 13px; }
-.portfolio-resume-pages { display: grid; gap: 20px; }
-.portfolio-resume-page { display: grid; justify-items: start; gap: 10px; min-width: 0; padding: 14px; border: 1px solid rgba(91, 131, 182, .14); border-radius: 15px; background: rgba(255, 255, 255, .82); }
-.portfolio-resume-page h3 { margin: 0; color: #456487; font-size: 13px; }
-.portfolio-resume-image { display: block; width: 100%; max-width: 900px; padding: 8px; border: 1px solid rgba(72, 102, 138, .14); border-radius: 8px; background: #fff; box-shadow: 0 8px 28px rgba(41, 68, 103, .08); cursor: zoom-in; }
-.portfolio-resume-image-full { display: block; width: 100%; height: auto; max-height: none; object-fit: contain; }
-.portfolio-resume-image-status { color: #617891; font-size: 13px; }
-.portfolio-resume-download { display: flex; align-items: center; justify-content: space-between; gap: 18px; }
 @media (max-width: 650px) {
   .portfolio-section-adjacent button { max-width: 50%; font-size: 11px; }
-  .portfolio-resume-page { padding: 9px; }
 }

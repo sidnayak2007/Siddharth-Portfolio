@@ -5073,7 +5073,7 @@ const [
                   The longer you survive, the faster and more chaotic the office becomes.
                 </p>
                 {onNavigate && <nav className="ob-portfolio-adjacent" aria-label="Other portfolio sections">
-                  <button type="button" onClick={() => onNavigate("resume")}>← Resume</button>
+                  <button type="button" onClick={() => onNavigate("certifications")}>← Certifications</button>
                   <button type="button" onClick={() => onNavigate("contact")}>Contact →</button>
                 </nav>}
               </div>

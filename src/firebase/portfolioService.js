@@ -2,7 +2,7 @@ import { doc, getDocFromServer, serverTimestamp, setDoc, writeBatch } from "fire
 import { adminAuth, adminDb, isAuthorizedAdmin } from "./firebase";
 
 const ALLOWED_SECTIONS = new Set([
-  "about", "experience", "projects", "skills", "education", "certifications", "resume", "contact",
+  "about", "experience", "projects", "skills", "education", "certifications", "contact",
 ]);
 
 function assertSection(sectionId) {
