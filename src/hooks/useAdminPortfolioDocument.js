@@ -71,7 +71,12 @@ export function useAdminPortfolioDocument(sectionId, fallback) {
 
   useEffect(() => {
     if (!dirty) return undefined;
-    const warn = (event) => { event.preventDefault(); event.returnValue = ""; };
+    const warn = (event) => {
+      // AdminShell already asked before navigating between editors.
+      if (window.__portfolioAdminNavigationConfirmed) return;
+      event.preventDefault();
+      event.returnValue = "";
+    };
     window.addEventListener("beforeunload", warn);
     return () => window.removeEventListener("beforeunload", warn);
   }, [dirty]);
