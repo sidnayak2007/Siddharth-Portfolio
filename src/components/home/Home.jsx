@@ -317,6 +317,9 @@ EDUCATION
           Explore {activeItem.label}
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14m-5-5 5 5-5 5" /></svg>
         </button>
+        <button className="ps-resume-shortcut" type="button" onClick={() => onOpenSection?.({ id: "resume" })} disabled={opening}>
+          View resume <span aria-hidden="true">↗</span>
+        </button>
       </section>
     </main>
   );

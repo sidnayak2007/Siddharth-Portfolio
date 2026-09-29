@@ -21,6 +21,17 @@ export function createContentId(prefix = "item") {
     .slice(2, 10)}`;
 }
 
+export const resumeImageFallback = {
+  // The existing Firestore rule still requires these legacy document fields.
+  eyebrow: "RESUME",
+  heading: "Resume",
+  intro: "",
+  timeline: [],
+  imageUrl: null,
+  imagePath: "",
+  imageName: "",
+};
+
 /* =========================================================
    ABOUT
 ========================================================= */

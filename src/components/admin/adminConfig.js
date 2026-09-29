@@ -5,5 +5,6 @@ export const ADMIN_SECTIONS = [
   { id: "skills", number: "04", title: "Skills", description: "Categories and links to related work." },
   { id: "education", number: "05", title: "Education", description: "Qualifications, achievements and documents." },
   { id: "certifications", number: "06", title: "Certifications", description: "Credentials, certificate images and verification links." },
+  { id: "resume", number: "CV", title: "Resume image", description: "Replace the picture shown by the Home shortcut." },
   { id: "contact", number: "08", title: "Contact", description: "Professional links, privacy and availability." },
 ];

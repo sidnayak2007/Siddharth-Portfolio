@@ -10,6 +10,7 @@ const Projects = lazy(() => import("./components/sections/Projects"));
 const Skills = lazy(() => import("./components/sections/Skills"));
 const Education = lazy(() => import("./components/sections/Education"));
 const Certifications = lazy(() => import("./components/sections/Certifications"));
+const Resume = lazy(() => import("./components/sections/Resume"));
 const Contact = lazy(() => import("./components/sections/Contact"));
 const Game = lazy(() => import("./components/sections/Game"));
 const AdminRoute = lazy(() => import("./components/admin/AdminRoute"));
@@ -21,6 +22,7 @@ const pages = {
   skills: Skills,
   education: Education,
   certifications: Certifications,
+  resume: Resume,
   game: Game,
   contact: Contact,
 };
@@ -28,6 +30,10 @@ const pages = {
 function LoadingPage({ label }) {
   return <main role="status" style={{ minHeight: "100dvh", display: "grid", placeItems: "center", padding: 24, background: "#fbfdff", color: "#52709c", fontFamily: "Inter, ui-sans-serif, system-ui, sans-serif" }}>Opening {label}…</main>;
 }
+
+const findSection = (id) => id === "resume"
+  ? { id: "resume", label: "Resume" }
+  : publicSections.find((item) => item.id === id);
 
 export default function App() {
   const isAdminPage = getAdminSection() !== null;
@@ -42,14 +48,14 @@ export default function App() {
     const syncHistory = () => {
       const view = window.history.state?.portfolioView;
       setStarted(Boolean(view));
-      setActiveSection(publicSections.find((item) => item.id === view) || null);
+      setActiveSection(findSection(view) || null);
     };
     window.addEventListener("popstate", syncHistory);
     return () => window.removeEventListener("popstate", syncHistory);
   }, [isAdminPage]);
 
   const openSection = (section) => {
-    const item = publicSections.find((entry) => entry.id === section?.id);
+    const item = findSection(section?.id);
     if (!item) return;
     window.history.pushState({ portfolioView: item.id }, "");
     setActiveSection(item);
@@ -70,6 +76,9 @@ export default function App() {
   if (activeSection) {
     const Page = pages[activeSection.id];
     if (Page) {
+      if (activeSection.id === "resume") {
+        return <Suspense fallback={<LoadingPage label="Resume" />}><Page onBack={backHome} /></Suspense>;
+      }
       const index = publicSections.findIndex((item) => item.id === activeSection.id);
       const navigation = {
         previous: publicSections[(index - 1 + publicSections.length) % publicSections.length],

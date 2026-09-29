@@ -7,6 +7,7 @@ import AdminCertifications from "./AdminCertifications";
 import AdminEducation from "./AdminEducation";
 import AdminExperience from "./AdminExperience";
 import AdminProjects from "./AdminProjects";
+import AdminResume from "./AdminResume";
 import AdminShell from "./AdminShell";
 import AdminSkills from "./AdminSkills";
 import { ADMIN_SECTIONS } from "./adminConfig";
@@ -21,6 +22,7 @@ const EDITORS = {
   skills: AdminSkills,
   education: AdminEducation,
   certifications: AdminCertifications,
+  resume: AdminResume,
   contact: AdminContact,
 };
 
